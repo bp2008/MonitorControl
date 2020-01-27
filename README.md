@@ -13,6 +13,8 @@ Configure the application as you desire, and use the web interface to remotely c
 
 ![screenshot](https://i.imgur.com/YfDzXkt.png)
 
+Configuration changes take effect immediately.
+
 Closing the configuration window will not exit the program unless you click "Exit Program", or choose the "Exit" option from the tray icon's context menu.
 
 ## Building From Source
