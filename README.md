@@ -17,6 +17,10 @@ Configuration changes take effect immediately.
 
 Closing the configuration window will not exit the program unless you click "Exit Program", or choose the "Exit" option from the tray icon's context menu.
 
+## Web Interface
+
+The web server responds with a basic guide explaining the available commands:
+
 ![screenshot](https://i.imgur.com/UZa8p6U.png)
 
 ## Building From Source
