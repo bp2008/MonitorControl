@@ -1,5 +1,5 @@
 # MonitorControl
-A small Windows program that allows control of the local monitors via HTTP.
+A small Windows program that allows you to put your monitors to sleep via HTTP.  Also offers the ability to turn monitors back on, although this ability does not work on all systems.
 
 ## Usage
 
@@ -16,6 +16,8 @@ Configure the application as you desire, and use the web interface to remotely c
 Configuration changes take effect immediately.
 
 Closing the configuration window will not exit the program unless you click "Exit Program", or choose the "Exit" option from the tray icon's context menu.
+
+![screenshot](https://i.imgur.com/UZa8p6U.png)
 
 ## Building From Source
 
