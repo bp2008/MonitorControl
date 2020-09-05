@@ -39,37 +39,11 @@ namespace MonitorControl
 			{
 				int idleTimeMs = p.GetIntParam("ifidle", 0);
 				int delayMs = p.GetIntParam("delay", 0);
-				bool mute = p.GetBoolParam("mute");
 				Action setOff = () =>
 				{
 					if (idleTimeMs <= 0 || LastInput.GetLastInputAgeMs() >= idleTimeMs)
 					{
-						uint lastInputAge = LastInput.GetLastInputAgeMs();
-						currentMonitorStatus = "off";
-						SetMonitorInState(2);
-						if (mute)
-						{
-							if (!AudioManager.GetMasterVolumeMute())
-							{
-								AudioManager.SetMasterVolumeMute(true);
-								Thread thrUnmute = new Thread(() =>
-								{
-									// In theory the last input counter will roll over after 49.7102696 days. Or maybe it'll just stop incrementing?  Either way, lets hope the PC doesn't stay idle that long.
-									while (true)
-									{
-										uint inputAge = LastInput.GetLastInputAgeMs();
-										if (inputAge < lastInputAge)
-											break;
-										lastInputAge = inputAge;
-										Thread.Sleep(1000);
-									}
-									AudioManager.SetMasterVolumeMute(false);
-								});
-								thrUnmute.IsBackground = true;
-								thrUnmute.Name = "Unmute when user returns";
-								thrUnmute.Start();
-							}
-						}
+						Off(p.GetBoolParam("mute"));
 					}
 				};
 				if (delayMs > 0)
@@ -81,7 +55,7 @@ namespace MonitorControl
 			}
 			else if (p.requestedPage == "off_if_idle")
 			{
-				OffIfIdle();
+				OffIfIdle(Program.settings.idleTimeMs, p.GetBoolParam("mute"));
 			}
 			else if (p.requestedPage == "standby")
 			{
@@ -104,7 +78,7 @@ namespace MonitorControl
 			{
 				if (currentMonitorStatus == "on")
 				{
-					OffIfIdle();
+					OffIfIdle(Program.settings.idleTimeMs, p.GetBoolParam("mute"));
 				}
 				else
 				{
@@ -223,10 +197,11 @@ namespace MonitorControl
 				+ BuildRow("off?delay=3000&ifidle=2900", "wait 3000ms, then turn displays off if idle for 2900ms")
 				+ BuildRow("off?delay=3000&ifidle=2900&mute=1", "wait 3000ms, then turn displays off if idle for 2900ms, and also mute until the computer is no longer idle")
 				+ BuildRow("off_if_idle", "turn displays off if idle for the configured idle time (" + Program.settings.idleTimeMs + " ms)")
+				+ BuildRow("off_if_idle?mute=1", "turn displays off if idle for the configured idle time (" + Program.settings.idleTimeMs + " ms). Also mute until the computer is no longer idle.")
 				+ BuildRow("standby", "change displays to standby state -- probably does nothing")
 				+ BuildRow("status", "return the current status (\"on\" or \"off\")")
 				+ BuildRow("idle", "return the time in milliseconds since the last user input")
-				+ BuildRow("smarttoggle", "if status is \"on\" then <b>off_if_idle</b>, else <b>on</b>")
+				+ BuildRow("smarttoggle", "if status is \"on\" then <b>off_if_idle</b>, else <b>on</b>. Also supports the <b>mute</b> boolean argument.")
 				+ BuildRow("getvolume", "returns default audio device volume from 0 to 100")
 				+ BuildRow("setvolume?level=10", "sets default audio device volume from 0 to 100")
 				+ BuildRow("mute", "mutes default audio device")
@@ -257,12 +232,41 @@ namespace MonitorControl
 			}
 		}
 
-		private void OffIfIdle()
+		private void OffIfIdle(int idleTimeMs, bool mute)
 		{
-			if (LastInput.GetLastInputAgeMs() >= Program.settings.idleTimeMs)
+			if (LastInput.GetLastInputAgeMs() >= idleTimeMs)
 			{
-				currentMonitorStatus = "off";
-				SetMonitorInState(2);
+				Off(mute);
+			}
+		}
+		private void Off(bool mute)
+		{
+			currentMonitorStatus = "off";
+			SetMonitorInState(2);
+
+			if (mute)
+			{
+				uint lastInputAge = LastInput.GetLastInputAgeMs();
+				if (!AudioManager.GetMasterVolumeMute())
+				{
+					AudioManager.SetMasterVolumeMute(true);
+					Thread thrUnmute = new Thread(() =>
+					{
+						// In theory the last input counter will roll over after 49.7102696 days. Or maybe it'll just stop incrementing?  Either way, lets hope the PC doesn't stay idle that long.
+						while (true)
+						{
+							uint inputAge = LastInput.GetLastInputAgeMs();
+							if (inputAge < lastInputAge)
+								break;
+							lastInputAge = inputAge;
+							Thread.Sleep(1000);
+						}
+						AudioManager.SetMasterVolumeMute(false);
+					});
+					thrUnmute.IsBackground = true;
+					thrUnmute.Name = "Unmute when user returns";
+					thrUnmute.Start();
+				}
 			}
 		}
 
