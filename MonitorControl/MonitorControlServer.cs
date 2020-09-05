@@ -7,6 +7,8 @@ using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 using BPUtil;
+using BPUtil.NativeWin;
+using BPUtil.NativeWin.AudioController;
 using BPUtil.SimpleHttp;
 
 namespace MonitorControl
@@ -36,11 +38,46 @@ namespace MonitorControl
 			else if (p.requestedPage == "off")
 			{
 				int idleTimeMs = p.GetIntParam("ifidle", 0);
-				if (idleTimeMs <= 0 || BPUtil.NativeWin.LastInput.GetLastInputAgeMs() >= idleTimeMs)
+				int delayMs = p.GetIntParam("delay", 0);
+				bool mute = p.GetBoolParam("mute");
+				Action setOff = () =>
 				{
-					currentMonitorStatus = "off";
-					SetMonitorInState(2);
+					if (idleTimeMs <= 0 || LastInput.GetLastInputAgeMs() >= idleTimeMs)
+					{
+						uint lastInputAge = LastInput.GetLastInputAgeMs();
+						currentMonitorStatus = "off";
+						SetMonitorInState(2);
+						if (mute)
+						{
+							if (!AudioManager.GetMasterVolumeMute())
+							{
+								AudioManager.SetMasterVolumeMute(true);
+								Thread thrUnmute = new Thread(() =>
+								{
+									// In theory the last input counter will roll over after 49.7102696 days. Or maybe it'll just stop incrementing?  Either way, lets hope the PC doesn't stay idle that long.
+									while (true)
+									{
+										uint inputAge = LastInput.GetLastInputAgeMs();
+										if (inputAge < lastInputAge)
+											break;
+										lastInputAge = inputAge;
+										Thread.Sleep(1000);
+									}
+									AudioManager.SetMasterVolumeMute(false);
+								});
+								thrUnmute.IsBackground = true;
+								thrUnmute.Name = "Unmute when user returns";
+								thrUnmute.Start();
+							}
+						}
+					}
+				};
+				if (delayMs > 0)
+				{
+					SetTimeout.OnBackground(setOff, delayMs);
 				}
+				else
+					setOff();
 			}
 			else if (p.requestedPage == "off_if_idle")
 			{
@@ -60,7 +97,7 @@ namespace MonitorControl
 			else if (p.requestedPage == "idle")
 			{
 				p.writeSuccess("text/plain", additionalHeaders: additionalHeaders);
-				p.outputStream.Write(BPUtil.NativeWin.LastInput.GetLastInputAgeMs());
+				p.outputStream.Write(LastInput.GetLastInputAgeMs());
 				return;
 			}
 			else if (p.requestedPage == "smarttoggle")
@@ -77,6 +114,90 @@ namespace MonitorControl
 			else if (p.requestedPage == "cancel")
 			{
 				StopMonitorOffThread();
+			}
+			else if (p.requestedPage == "getvolume")
+			{
+				int level = 0;
+				try
+				{
+					level = (int)Math.Round(AudioManager.GetMasterVolume());
+					//level = Audio.GetVolume();
+				}
+				catch (Exception ex)
+				{
+					p.writeSuccess("text/plain; charset=utf-8", responseCode: "500 Internal Server Error");
+					p.outputStream.Write(ex.ToString());
+					return;
+				}
+				p.writeSuccess("text/plain");
+				p.outputStream.Write(level);
+			}
+			else if (p.requestedPage == "setvolume")
+			{
+				int level = p.GetIntParam("level");
+				level = level.Clamp(0, 100);
+				try
+				{
+					AudioManager.SetMasterVolume(level);
+					//Audio.SetVolume(level);
+				}
+				catch (Exception ex)
+				{
+					p.writeSuccess("text/plain; charset=utf-8", responseCode: "500 Internal Server Error");
+					p.outputStream.Write(ex.ToString());
+					return;
+				}
+				p.writeSuccess("text/plain");
+				p.outputStream.Write(level);
+			}
+			else if (p.requestedPage == "mute")
+			{
+				try
+				{
+					AudioManager.SetMasterVolumeMute(true);
+					//Audio.SetMute(true);
+				}
+				catch (Exception ex)
+				{
+					p.writeSuccess("text/plain; charset=utf-8", responseCode: "500 Internal Server Error");
+					p.outputStream.Write(ex.ToString());
+					return;
+				}
+				p.writeSuccess("text/plain");
+				p.outputStream.Write("muted");
+			}
+			else if (p.requestedPage == "unmute")
+			{
+				try
+				{
+					AudioManager.SetMasterVolumeMute(false);
+					//Audio.SetMute(false);
+				}
+				catch (Exception ex)
+				{
+					p.writeSuccess("text/plain; charset=utf-8", responseCode: "500 Internal Server Error");
+					p.outputStream.Write(ex.ToString());
+					return;
+				}
+				p.writeSuccess("text/plain");
+				p.outputStream.Write("unmuted");
+			}
+			else if (p.requestedPage == "getmute")
+			{
+				bool muted = false;
+				try
+				{
+					muted = AudioManager.GetMasterVolumeMute();
+					//muted = Audio.GetMute();
+				}
+				catch (Exception ex)
+				{
+					p.writeSuccess("text/plain; charset=utf-8", responseCode: "500 Internal Server Error");
+					p.outputStream.Write(ex.ToString());
+					return;
+				}
+				p.writeSuccess("text/plain");
+				p.outputStream.Write(muted ? "muted" : "unmuted");
 			}
 			else
 				successMessage = "";
@@ -99,11 +220,18 @@ namespace MonitorControl
 				+ BuildRow("cancel", "cancel a scheduled monitor off command (see above)")
 				+ BuildRow("off", "turn displays off")
 				+ BuildRow("off?ifidle=3000", "turn displays off if idle for 3000ms")
+				+ BuildRow("off?delay=3000&ifidle=2900", "wait 3000ms, then turn displays off if idle for 2900ms")
+				+ BuildRow("off?delay=3000&ifidle=2900&mute=1", "wait 3000ms, then turn displays off if idle for 2900ms, and also mute until the computer is no longer idle")
 				+ BuildRow("off_if_idle", "turn displays off if idle for the configured idle time (" + Program.settings.idleTimeMs + " ms)")
 				+ BuildRow("standby", "change displays to standby state -- probably does nothing")
 				+ BuildRow("status", "return the current status (\"on\" or \"off\")")
 				+ BuildRow("idle", "return the time in milliseconds since the last user input")
 				+ BuildRow("smarttoggle", "if status is \"on\" then <b>off_if_idle</b>, else <b>on</b>")
+				+ BuildRow("getvolume", "returns default audio device volume from 0 to 100")
+				+ BuildRow("setvolume?level=10", "sets default audio device volume from 0 to 100")
+				+ BuildRow("mute", "mutes default audio device")
+				+ BuildRow("unmute", "unmutes default audio device")
+				+ BuildRow("getmute", "returns \"muted\" or \"unmuted\"")
 				+ "</tbody>"
 				+ "</table>"
 				+ "</body>"
@@ -131,7 +259,7 @@ namespace MonitorControl
 
 		private void OffIfIdle()
 		{
-			if (BPUtil.NativeWin.LastInput.GetLastInputAgeMs() >= Program.settings.idleTimeMs)
+			if (LastInput.GetLastInputAgeMs() >= Program.settings.idleTimeMs)
 			{
 				currentMonitorStatus = "off";
 				SetMonitorInState(2);
