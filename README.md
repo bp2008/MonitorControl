@@ -3,7 +3,7 @@ A small Windows program that allows you to put your monitors to sleep via HTTP. 
 
 ## Usage
 
-Download a release [from the releases tab]() and extract it.  Run MonitorControl.exe.
+Download a release [from the releases tab](https://github.com/bp2008/MonitorControl/releases) and extract it.  Run MonitorControl.exe.
 
 Find the system tray icon that looks like this, and double-click or right-click it to access the configuration window.
 
