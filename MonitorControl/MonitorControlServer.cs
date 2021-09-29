@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
+using System.Windows.Forms;
 using BPUtil;
 using BPUtil.NativeWin;
 using BPUtil.NativeWin.AudioController;
@@ -176,6 +177,9 @@ namespace MonitorControl
 			else
 				successMessage = "";
 
+			if (p.responseWritten)
+				return;
+
 			p.writeSuccess(additionalHeaders: additionalHeaders);
 			p.outputStream.Write("<html><head><title>Monitor Control Service</title></head>"
 				+ "<style type=\"text/css\">"
@@ -219,6 +223,16 @@ namespace MonitorControl
 
 		private void On(HttpProcessor p)
 		{
+			if (Cursor.Position.X > 0)
+			{
+				Mouse.MoveCursor(-1, 0);
+				Mouse.MoveCursor(1, 0);
+			}
+			else
+			{
+				Mouse.MoveCursor(1, 0);
+				Mouse.MoveCursor(-1, 0);
+			}
 			currentMonitorStatus = "on";
 			SetMonitorInState(-1);
 			int offAfterSecs = p.GetIntParam("offAfterSecs", 0);
