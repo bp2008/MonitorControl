@@ -11,7 +11,7 @@ Find the system tray icon that looks like this, and double-click or right-click 
 
 Configure the application as you desire, and use the web interface to remotely control your computer monitors.
 
-![screenshot](https://i.imgur.com/YfDzXkt.png)
+![screenshot](https://i.imgur.com/mUrGb5E.png)
 
 Configuration changes take effect immediately.
 
