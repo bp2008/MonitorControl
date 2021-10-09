@@ -6,6 +6,7 @@ using System.Runtime.InteropServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
+using System.Web;
 using System.Windows.Forms;
 using BPUtil;
 using BPUtil.NativeWin;
@@ -17,6 +18,7 @@ namespace MonitorControl
 	public class MonitorControlServer : HttpServer
 	{
 		Thread MonitorOffTimerThread;
+		Thread thrWaitForWake;
 		private string currentMonitorStatus = "on";
 		public MonitorControlServer(int port, int httpsPort = -1, X509Certificate2 cert = null) : base(port, httpsPort, cert)
 		{
@@ -258,30 +260,15 @@ namespace MonitorControl
 			currentMonitorStatus = "off";
 			SetMonitorInState(2);
 
-			if (mute)
+			uint lastInputAge = LastInput.GetLastInputAgeMs();
+			bool didMute = false;
+			if (mute && !AudioManager.GetMasterVolumeMute())
 			{
-				uint lastInputAge = LastInput.GetLastInputAgeMs();
-				if (!AudioManager.GetMasterVolumeMute())
-				{
-					AudioManager.SetMasterVolumeMute(true);
-					Thread thrUnmute = new Thread(() =>
-					{
-						// In theory the last input counter will roll over after 49.7102696 days. Or maybe it'll just stop incrementing?  Either way, lets hope the PC doesn't stay idle that long.
-						while (true)
-						{
-							uint inputAge = LastInput.GetLastInputAgeMs();
-							if (inputAge < lastInputAge)
-								break;
-							lastInputAge = inputAge;
-							Thread.Sleep(1000);
-						}
-						AudioManager.SetMasterVolumeMute(false);
-					});
-					thrUnmute.IsBackground = true;
-					thrUnmute.Name = "Unmute when user returns";
-					thrUnmute.Start();
-				}
+				AudioManager.SetMasterVolumeMute(true);
+				didMute = true;
 			}
+			StopWaitForWakeThread();
+			StartWaitForWakeThread(new { lastInputAge, didMute });
 		}
 
 		public override void handlePOSTRequest(HttpProcessor p, StreamReader inputData)
@@ -300,16 +287,24 @@ namespace MonitorControl
 				if (MonitorOffTimerThread != null && MonitorOffTimerThread.IsAlive)
 					MonitorOffTimerThread.Abort();
 			}
-			catch (Exception) { }
+			catch (Exception ex)
+			{
+				Logger.Debug(ex);
+			}
 		}
 		private void StartMonitorOffThread(int offAfterSecs)
 		{
 			try
 			{
 				MonitorOffTimerThread = new Thread(MonitorOffProcedure);
+				MonitorOffTimerThread.IsBackground = true;
+				MonitorOffTimerThread.Name = "Turn off monitor after delay";
 				MonitorOffTimerThread.Start(offAfterSecs);
 			}
-			catch (Exception) { }
+			catch (Exception ex)
+			{
+				Logger.Debug(ex);
+			}
 		}
 
 		private void MonitorOffProcedure(object arg)
@@ -319,6 +314,60 @@ namespace MonitorControl
 				Thread.Sleep((int)arg * 1000);
 				currentMonitorStatus = "off";
 				SetMonitorInState(2);
+			}
+			catch (ThreadAbortException)
+			{
+			}
+			catch (Exception ex)
+			{
+				Logger.Debug(ex);
+			}
+		}
+		private void StopWaitForWakeThread()
+		{
+			try
+			{
+				if (thrWaitForWake != null && thrWaitForWake.IsAlive)
+					thrWaitForWake.Abort();
+			}
+			catch (Exception ex)
+			{
+				Logger.Debug(ex);
+			}
+		}
+		private void StartWaitForWakeThread(object arg)
+		{
+			try
+			{
+				thrWaitForWake = new Thread(WaitForWakeProcedure);
+				thrWaitForWake.IsBackground = true;
+				thrWaitForWake.Name = "Wait for wake";
+				thrWaitForWake.Start(arg);
+			}
+			catch (Exception ex)
+			{
+				Logger.Debug(ex);
+			}
+		}
+		private void WaitForWakeProcedure(object arg)
+		{
+			try
+			{
+				dynamic args = arg;
+				uint lastInputAge = args.lastInputAge;
+				bool didMute = args.didMute;
+				// In theory the last input counter will roll over after 49.7102696 days. Or maybe it'll just stop incrementing?  Either way, lets hope the PC doesn't stay idle that long.
+				while (true)
+				{
+					uint inputAge = LastInput.GetLastInputAgeMs();
+					if (inputAge < lastInputAge)
+						break;
+					lastInputAge = inputAge;
+					Thread.Sleep(1000);
+				}
+				currentMonitorStatus = "on";
+				if (didMute)
+					AudioManager.SetMasterVolumeMute(false);
 			}
 			catch (ThreadAbortException)
 			{
@@ -341,3 +390,62 @@ namespace MonitorControl
 		static extern IntPtr GetDesktopWindow();
 	}
 }
+
+
+// Attempted to use nuget package "CCDWrapper" to get monitor state (path.targetInfo.targetAvailable), but it does not reveal true monitor state on my system.
+//string state = "unknown";
+//try
+//{
+//	CCD.Enum.QueryDisplayFlags qdf = CCD.Enum.QueryDisplayFlags.DatabaseCurrent;
+//	CCD.Enum.StatusCode result = CCD.Wrapper.GetDisplayConfigBufferSizes(qdf, out int numPathArrayElements, out int numModeInfoArrayElements);
+//	if (result == CCD.Enum.StatusCode.Success)
+//	{
+//		StringBuilder sb = new StringBuilder();
+//		sb.AppendLine("numPathArrayElements: " + numPathArrayElements);
+//		sb.AppendLine("numModeInfoArrayElements: " + numModeInfoArrayElements);
+
+//		CCD.Struct.DisplayConfigPathInfo[] paths = new CCD.Struct.DisplayConfigPathInfo[numPathArrayElements];
+//		CCD.Struct.DisplayConfigModeInfo[] modes = new CCD.Struct.DisplayConfigModeInfo[numModeInfoArrayElements];
+//		CCD.Enum.DisplayConfigTopologyId topologyId;
+//		result = CCD.Wrapper.QueryDisplayConfig(qdf, ref numPathArrayElements, paths, ref numModeInfoArrayElements, modes, out topologyId);
+
+//		if (result == CCD.Enum.StatusCode.Success)
+//		{
+//			sb.AppendLine("numPathArrayElements: " + numPathArrayElements);
+//			sb.AppendLine("numModeInfoArrayElements: " + numModeInfoArrayElements);
+//			sb.AppendLine("TopologyId: " + topologyId);
+
+//			sb.AppendLine("Paths:");
+//			foreach (CCD.Struct.DisplayConfigPathInfo path in paths.Take(numPathArrayElements))
+//			{
+//				sb.AppendLine("{");
+//				sb.AppendLine("\tFlags: " + path.flags.GetAllMatchedFlagsStr());
+//				sb.AppendLine("\tSourceInfo: " + Newtonsoft.Json.JsonConvert.SerializeObject(path.sourceInfo, Newtonsoft.Json.Formatting.None));
+//				sb.AppendLine("\tTargetInfo: " + Newtonsoft.Json.JsonConvert.SerializeObject(path.targetInfo, Newtonsoft.Json.Formatting.None));
+//				sb.AppendLine("}");
+//			}
+
+//			sb.AppendLine("Modes:");
+//			foreach (CCD.Struct.DisplayConfigModeInfo mode in modes.Take(numModeInfoArrayElements))
+//			{
+//				sb.AppendLine(Newtonsoft.Json.JsonConvert.SerializeObject(mode, Newtonsoft.Json.Formatting.Indented));
+//			}
+//			state = sb.ToString();
+//		}
+//		else
+//			state = "QueryDisplayConfig returned " + result;
+//	}
+//	else
+//		state = "GetDisplayConfigBufferSizes returned " + result;
+//	//muted = Audio.GetMute();
+//}
+//catch (Exception ex)
+//{
+//	p.writeSuccess("text/plain; charset=utf-8", responseCode: "500 Internal Server Error");
+//	p.outputStream.Write(ex.ToString());
+//	return;
+//}
+//p.writeSuccess("text/html; charset=utf-8");
+//p.outputStream.Write("<html><head><meta http-equiv=\"refresh\" content=\"1\" /></head><body><div style=\"white-space: pre;\">");
+//p.outputStream.Write(HttpUtility.HtmlEncode(state));
+//p.outputStream.Write("</div></body></html>");
