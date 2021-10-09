@@ -21,7 +21,7 @@ Closing the configuration window will not exit the program unless you click "Exi
 
 The web server responds with a basic guide explaining the available commands:
 
-![screenshot](https://i.imgur.com/O1NmDge.png)
+![screenshot](https://i.imgur.com/FWpqhQu.png)
 
 ## Building From Source
 
