@@ -12,13 +12,25 @@ namespace MonitorControl
 		public int https_port = -1;
 		public int idleTimeMs = 3000;
 		public string ip_whitelist = "127.0.0.1";
+		public string syncAddress = "";
+		public int syncPort = 8001;
+		/// <summary>
+		/// (0: No action) …  (1: Turn Off) … (2: Turn On)
+		/// </summary>
+		public int syncFailureAction = 0;
+		public bool syncHTTPS = false;
+		/// <summary>
+		/// Mute audio when turning off monitors because of remote server sync.
+		/// </summary>
+		public bool syncMute;
+
 		/// <summary>
 		/// Returns the <see cref="ip_whitelist"/> string with line breaks converted to Windows format. The XML writer breaks them otherwise.
 		/// </summary>
 		/// <returns></returns>
 		public string GetIpWhitelistString()
 		{
-				return ip_whitelist.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n");
+			return ip_whitelist.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n");
 		}
 
 		public bool IpIsWhitelisted(string ip)

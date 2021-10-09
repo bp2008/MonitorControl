@@ -34,6 +34,11 @@ namespace MonitorControl
 			nudHttpsPort.Value = Program.settings.https_port;
 			nudIdleMs.Value = Program.settings.idleTimeMs;
 			txtIpWhitelist.Text = Program.settings.GetIpWhitelistString();
+			txtSyncAddress.Text = Program.settings.syncAddress;
+			nudSyncPort.Value = Program.settings.syncPort;
+			ddlSyncFailureAction.SelectedIndex = BPMath.Clamp(Program.settings.syncFailureAction, 0, 2);
+			cbSyncHTTPS.Checked = Program.settings.syncHTTPS;
+			cbSyncMuteWhenOff.Checked = Program.settings.syncMute;
 
 			SetCurrentHttpPorts();
 		}
@@ -94,11 +99,50 @@ namespace MonitorControl
 				Program.settings.Save();
 		}
 
+		private void txtSyncAddress_TextChanged(object sender, EventArgs e)
+		{
+			string old = Program.settings.syncAddress;
+			Program.settings.syncAddress = txtSyncAddress.Text;
+			if (old != Program.settings.syncAddress)
+				Program.settings.Save();
+		}
+
+		private void nudSyncPort_ValueChanged(object sender, EventArgs e)
+		{
+			int old = Program.settings.syncPort;
+			Program.settings.syncPort = (int)nudSyncPort.Value;
+			if (old != Program.settings.syncPort)
+				Program.settings.Save();
+		}
+
 		private void txtIpWhitelist_TextChanged(object sender, EventArgs e)
 		{
 			string old = Program.settings.GetIpWhitelistString();
 			Program.settings.ip_whitelist = txtIpWhitelist.Text;
 			if (old != Program.settings.GetIpWhitelistString())
+				Program.settings.Save();
+		}
+
+		private void ddlSyncFailureAction_SelectedIndexChanged(object sender, EventArgs e)
+		{
+			int old = Program.settings.syncFailureAction;
+			Program.settings.syncFailureAction = ddlSyncFailureAction.SelectedIndex;
+			if (old != Program.settings.syncFailureAction)
+				Program.settings.Save();
+		}
+
+		private void cbSyncHTTPS_CheckedChanged(object sender, EventArgs e)
+		{
+			bool old = Program.settings.syncHTTPS;
+			Program.settings.syncHTTPS = cbSyncHTTPS.Checked;
+			if (old != Program.settings.syncHTTPS)
+				Program.settings.Save();
+		}
+		private void cbSyncMuteWhenOff_CheckedChanged(object sender, EventArgs e)
+		{
+			bool old = Program.settings.syncMute;
+			Program.settings.syncMute = cbSyncMuteWhenOff.Checked;
+			if (old != Program.settings.syncMute)
 				Program.settings.Save();
 		}
 

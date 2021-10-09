@@ -17,9 +17,11 @@ namespace MonitorControl
 {
 	public class MonitorControlServer : HttpServer
 	{
-		Thread MonitorOffTimerThread;
-		Thread thrWaitForWake;
-		private string currentMonitorStatus = "on";
+		private static Thread MonitorOffTimerThread;
+		private static Thread thrWaitForWake;
+		private static string currentMonitorStatus = "on";
+		private static object myLock = new object();
+		private static bool didMute = false;
 		public MonitorControlServer(int port, int httpsPort = -1, X509Certificate2 cert = null) : base(port, httpsPort, cert)
 		{
 		}
@@ -190,6 +192,7 @@ namespace MonitorControl
 				+ "</style>"
 				+ "<body>"
 				+ "<p class=\"result\">" + successMessage + "</p>"
+				+ "<p class=\"syncStatus\">(Remote server \"" + Program.settings.syncAddress + "\") " + HttpUtility.HtmlEncode(MonitorControlService.syncedServerStatus) + "</p>"
 				+ "<table>"
 				//+ "<thead>"
 				//+ "<tr><th></th><th></th></tr>"
@@ -223,8 +226,10 @@ namespace MonitorControl
 			return "<tr><td><a href=\"" + link + "\">" + link + "</a></td><td>" + description + "</td></tr>";
 		}
 
-		private void On(HttpProcessor p)
+		public static void On(HttpProcessor p)
 		{
+			UnmuteIfNeeded();
+
 			if (Cursor.Position.X > 0)
 			{
 				Mouse.MoveCursor(-1, 0);
@@ -237,38 +242,48 @@ namespace MonitorControl
 			}
 			currentMonitorStatus = "on";
 			SetMonitorInState(-1);
-			int offAfterSecs = p.GetIntParam("offAfterSecs", 0);
-			if (offAfterSecs > 0)
+			lock (myLock)
 			{
-				lock (this)
+				StopMonitorOffThread();
+				StopWaitForWakeThread();
+				if (p != null)
 				{
-					StopMonitorOffThread();
-					StartMonitorOffThread(offAfterSecs);
+					int offAfterSecs = p.GetIntParam("offAfterSecs", 0);
+					if (offAfterSecs > 0)
+					{
+						StartMonitorOffThread(offAfterSecs);
+					}
 				}
 			}
 		}
 
-		private void OffIfIdle(int idleTimeMs, bool mute)
+		public static void OffIfIdle(int idleTimeMs, bool mute)
 		{
 			if (LastInput.GetLastInputAgeMs() >= idleTimeMs)
 			{
 				Off(mute);
 			}
 		}
-		private void Off(bool mute)
+		public static void Off(bool mute)
 		{
+			UnmuteIfNeeded();
+
 			currentMonitorStatus = "off";
 			SetMonitorInState(2);
 
 			uint lastInputAge = LastInput.GetLastInputAgeMs();
-			bool didMute = false;
-			if (mute && !AudioManager.GetMasterVolumeMute())
+			lock (myLock)
 			{
-				AudioManager.SetMasterVolumeMute(true);
-				didMute = true;
+				didMute = false;
+				if (mute && !AudioManager.GetMasterVolumeMute())
+				{
+					AudioManager.SetMasterVolumeMute(true);
+					didMute = true;
+				}
+				StopMonitorOffThread();
+				StopWaitForWakeThread();
+				StartWaitForWakeThread(new { lastInputAge });
 			}
-			StopWaitForWakeThread();
-			StartWaitForWakeThread(new { lastInputAge, didMute });
 		}
 
 		public override void handlePOSTRequest(HttpProcessor p, StreamReader inputData)
@@ -277,10 +292,12 @@ namespace MonitorControl
 
 		protected override void stopServer()
 		{
+			UnmuteIfNeeded();
 			StopMonitorOffThread();
+			StopWaitForWakeThread();
 		}
 
-		private void StopMonitorOffThread()
+		private static void StopMonitorOffThread()
 		{
 			try
 			{
@@ -292,7 +309,7 @@ namespace MonitorControl
 				Logger.Debug(ex);
 			}
 		}
-		private void StartMonitorOffThread(int offAfterSecs)
+		private static void StartMonitorOffThread(int offAfterSecs)
 		{
 			try
 			{
@@ -307,7 +324,7 @@ namespace MonitorControl
 			}
 		}
 
-		private void MonitorOffProcedure(object arg)
+		private static void MonitorOffProcedure(object arg)
 		{
 			try
 			{
@@ -323,7 +340,7 @@ namespace MonitorControl
 				Logger.Debug(ex);
 			}
 		}
-		private void StopWaitForWakeThread()
+		private static void StopWaitForWakeThread()
 		{
 			try
 			{
@@ -335,7 +352,7 @@ namespace MonitorControl
 				Logger.Debug(ex);
 			}
 		}
-		private void StartWaitForWakeThread(object arg)
+		private static void StartWaitForWakeThread(object arg)
 		{
 			try
 			{
@@ -349,13 +366,12 @@ namespace MonitorControl
 				Logger.Debug(ex);
 			}
 		}
-		private void WaitForWakeProcedure(object arg)
+		private static void WaitForWakeProcedure(object arg)
 		{
 			try
 			{
 				dynamic args = arg;
 				uint lastInputAge = args.lastInputAge;
-				bool didMute = args.didMute;
 				// In theory the last input counter will roll over after 49.7102696 days. Or maybe it'll just stop incrementing?  Either way, lets hope the PC doesn't stay idle that long.
 				while (true)
 				{
@@ -366,8 +382,7 @@ namespace MonitorControl
 					Thread.Sleep(1000);
 				}
 				currentMonitorStatus = "on";
-				if (didMute)
-					AudioManager.SetMasterVolumeMute(false);
+				UnmuteIfNeeded();
 			}
 			catch (ThreadAbortException)
 			{
@@ -377,6 +392,16 @@ namespace MonitorControl
 				Logger.Debug(ex);
 			}
 		}
+
+		private static void UnmuteIfNeeded()
+		{
+			if (didMute)
+			{
+				AudioManager.SetMasterVolumeMute(false);
+				didMute = false;
+			}
+		}
+
 		private static void SetMonitorInState(int state)
 		{
 			Console.WriteLine(state);
