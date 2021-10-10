@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
@@ -12,6 +13,7 @@ using BPUtil;
 using BPUtil.NativeWin;
 using BPUtil.NativeWin.AudioController;
 using BPUtil.SimpleHttp;
+using Interceptor;
 
 namespace MonitorControl
 {
@@ -22,8 +24,13 @@ namespace MonitorControl
 		private static string currentMonitorStatus = "on";
 		private static object myLock = new object();
 		private static bool didMute = false;
+		private static Input virtualInput = new Input();
+		private static string interceptionDriverStatus = "…";
 		public MonitorControlServer(int port, int httpsPort = -1, X509Certificate2 cert = null) : base(port, httpsPort, cert)
 		{
+			virtualInput.KeyboardFilterMode = KeyboardFilterMode.None;
+			virtualInput.MouseFilterMode = MouseFilterMode.MouseMove;
+			interceptionDriverStatus = LoadInterceptionDriver();
 		}
 
 		public override void handleGETRequest(HttpProcessor p)
@@ -178,12 +185,32 @@ namespace MonitorControl
 				p.writeSuccess("text/plain");
 				p.outputStream.Write(muted ? "muted" : "unmuted");
 			}
+			else if (p.requestedPage == "mousemove")
+			{
+				int dx = p.GetIntParam("dx"); // x change
+				int dy = p.GetIntParam("dy"); // y change
+				int delay = p.GetIntParam("delay").Clamp(1, 200); // Approximate milliseconds between movements.
+				int times = p.GetIntParam("times").Clamp(1, 5000 / delay); // Number of times to perform the change.  Limited to about 5 seconds of movement.
+				try
+				{
+					DragMouse(dx, dy, delay, times);
+				}
+				catch (Exception ex)
+				{
+					p.writeSuccess("text/plain; charset=utf-8", responseCode: "500 Internal Server Error");
+					p.outputStream.Write(ex.ToString());
+					return;
+				}
+				p.writeSuccess("text/plain");
+				p.outputStream.Write("move complete. moved " + dx + "," + dy + " " + times + " times with " + delay + " ms delay");
+			}
 			else
 				successMessage = "";
 
 			if (p.responseWritten)
 				return;
 
+			interceptionDriverStatus = LoadInterceptionDriver();
 			p.writeSuccess(additionalHeaders: additionalHeaders);
 			p.outputStream.Write("<html><head><title>Monitor Control Service</title></head>"
 				+ "<style type=\"text/css\">"
@@ -193,6 +220,7 @@ namespace MonitorControl
 				+ "<body>"
 				+ "<p class=\"result\">" + successMessage + "</p>"
 				+ "<p class=\"syncStatus\">(Remote server \"" + Program.settings.syncAddress + "\") " + HttpUtility.HtmlEncode(MonitorControlService.syncedServerStatus) + "</p>"
+				+ "<p class=\"interceptionStatus\">" + interceptionDriverStatus + "</p>"
 				+ "<table>"
 				//+ "<thead>"
 				//+ "<tr><th></th><th></th></tr>"
@@ -216,30 +244,68 @@ namespace MonitorControl
 				+ BuildRow("mute", "mutes default audio device")
 				+ BuildRow("unmute", "unmutes default audio device")
 				+ BuildRow("getmute", "returns \"muted\" or \"unmuted\"")
+				+ BuildRow("mousemove?dx=2&dy=-2&delay=4&times=5", "moves the mouse cursor up 2px and to the right 2px, 5 times, waiting 4ms between each movement. Max delay 200ms. Max 5 seconds movement per command.")
 				+ "</tbody>"
 				+ "</table>"
 				+ "</body>"
 				+ "</html>");
 		}
+
+		private static string LoadInterceptionDriver()
+		{
+			if (virtualInput.IsLoaded)
+				return "interception driver is loaded";
+			else
+			{
+				try
+				{
+					if (virtualInput.Load())
+						return "interception driver is loaded";
+					else
+						return "interception driver is not installed. Please open an elevated command prompt (admin permission) and run <span style=\"border: 1px solid #999999; padding: 2px 4px; font-family: monospace; display: inline-block; background-color: #eef3ff;\">install-interception.exe /install</span> then reboot the computer. Otherwise input events will be simulated at a high level, so \"on\" commands may not reliably wake the monitor(s).";
+				}
+				catch (DllNotFoundException)
+				{
+					return "interception.dll not found. Input events will be simulated at a high level, so \"on\" commands may not reliably wake the monitor(s).";
+				}
+				catch (BadImageFormatException)
+				{
+					return "interception.dll does not match your operating system cpu architecture (" + (Environment.Is64BitOperatingSystem ? "64 bit" : "32 bit") + ").";
+				}
+				catch (Exception ex)
+				{
+					return "interception driver loading caused error: " + ex.ToString();
+				}
+			}
+		}
+		public static void DragMouse(int dx, int dy, int delay, int times)
+		{
+			dy *= -1;
+			Stopwatch sw = Stopwatch.StartNew();
+			EventWaitHandle ewh = new EventWaitHandle(false, EventResetMode.ManualReset);
+			for (int i = 0; i < times; i++)
+			{
+				int nextClick = i * delay;
+				int waitFor = nextClick - (int)sw.ElapsedMilliseconds;
+				if (waitFor > 0)
+					ewh.WaitOne(waitFor);
+
+				interceptionDriverStatus = LoadInterceptionDriver();
+				if (virtualInput.IsLoaded)
+					virtualInput.MoveMouseBy(dx, dy, false);
+				else
+					Mouse.MoveCursor(dx, dy);
+			}
+		}
+
 		private string BuildRow(string link, string description)
 		{
-			return "<tr><td><a href=\"" + link + "\">" + link + "</a></td><td>" + description + "</td></tr>";
+			return "<tr><td><a href=\"" + StringUtil.HtmlAttributeEncode(link) + "\">" + HttpUtility.HtmlEncode(link) + "</a></td><td>" + description + "</td></tr>";
 		}
 
 		public static void On(HttpProcessor p)
 		{
 			UnmuteIfNeeded();
-
-			if (Cursor.Position.X > 0)
-			{
-				Mouse.MoveCursor(-1, 0);
-				Mouse.MoveCursor(1, 0);
-			}
-			else
-			{
-				Mouse.MoveCursor(1, 0);
-				Mouse.MoveCursor(-1, 0);
-			}
 			currentMonitorStatus = "on";
 			SetMonitorInState(-1);
 			lock (myLock)
@@ -255,6 +321,25 @@ namespace MonitorControl
 					}
 				}
 			}
+			SetTimeout.OnBackground(() =>
+			{
+				int dx = Cursor.Position.X < 10 ? 2 : -2;
+				int dy = Cursor.Position.Y < 5 ? 2 : -2;
+				Cursor.Show();
+				IntPtr desktopHandle = NativeMethods.GetDesktopWindow();
+				Logger.Info("desktopHandle: " + desktopHandle);
+				if (desktopHandle != null && desktopHandle != IntPtr.Zero)
+				{
+					if (NativeMethods.SetForegroundWindow(desktopHandle))
+					{
+						Logger.Info("SetForegroundWindow: true");
+					}
+					else
+						Logger.Info("SetForegroundWindow: false");
+				}
+				DragMouse(dx, dy, 4, 5);
+				DragMouse(-dx, -dy, 4, 5);
+			}, 0);
 		}
 
 		public static void OffIfIdle(int idleTimeMs, bool mute)

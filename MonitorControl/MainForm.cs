@@ -204,5 +204,21 @@ namespace MonitorControl
 		{
 			this.Close();
 		}
+
+		private void btnInterceptionInstall_Click(object sender, EventArgs e)
+		{
+			if (!BPUtil.NativeWin.Admin.StartAsAdmin("cmd", "/C \"" + Globals.ApplicationDirectoryBase + "install-interception.exe\" /install & pause", Globals.ApplicationDirectoryBase))
+			{
+				MessageBox.Show("Failed to run interception installer. Please run \"install-interception.exe /install\" from an elevated command prompt.");
+			}
+		}
+
+		private void btnInterceptionUninstall_Click(object sender, EventArgs e)
+		{
+			if (!BPUtil.NativeWin.Admin.StartAsAdmin("cmd", "/C \"" + Globals.ApplicationDirectoryBase + "install-interception.exe\" /uninstall & pause", Globals.ApplicationDirectoryBase))
+			{
+				MessageBox.Show("Failed to run interception uninstaller. Please run \"install-interception.exe /uninstall\" from an elevated command prompt.");
+			}
+		}
 	}
 }
