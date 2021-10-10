@@ -44,6 +44,15 @@ namespace MonitorControl
 				Application.EnableVisualStyles();
 				Application.SetCompatibleTextRenderingDefault(false);
 
+
+				try
+				{
+					MainForm.MigrateLegacyAutostart();
+				}
+				catch (Exception)
+				{
+				}
+
 				service = new MonitorControlService();
 				service.Start();
 

@@ -55,8 +55,6 @@
 			this.cbStartAutomatically = new System.Windows.Forms.CheckBox();
 			this.btnOK = new System.Windows.Forms.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.btnInterceptionInstall = new System.Windows.Forms.Button();
-			this.btnInterceptionUninstall = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.nudHttpPort)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudHttpsPort)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudIdleMs)).BeginInit();
@@ -175,7 +173,7 @@
 			// 
 			this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.label5.AutoSize = true;
-			this.label5.Location = new System.Drawing.Point(12, 239);
+			this.label5.Location = new System.Drawing.Point(12, 212);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(101, 13);
 			this.label5.TabIndex = 10;
@@ -186,7 +184,7 @@
 			// 
 			this.txtIpWhitelist.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.txtIpWhitelist.Location = new System.Drawing.Point(12, 255);
+			this.txtIpWhitelist.Location = new System.Drawing.Point(12, 228);
 			this.txtIpWhitelist.Multiline = true;
 			this.txtIpWhitelist.Name = "txtIpWhitelist";
 			this.txtIpWhitelist.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -199,7 +197,7 @@
 			// 
 			this.btnExitProgram.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.btnExitProgram.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
-			this.btnExitProgram.Location = new System.Drawing.Point(183, 381);
+			this.btnExitProgram.Location = new System.Drawing.Point(183, 354);
 			this.btnExitProgram.Name = "btnExitProgram";
 			this.btnExitProgram.Size = new System.Drawing.Size(146, 23);
 			this.btnExitProgram.TabIndex = 40;
@@ -316,7 +314,7 @@
 			// btnOpenDataFolder
 			// 
 			this.btnOpenDataFolder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.btnOpenDataFolder.Location = new System.Drawing.Point(12, 381);
+			this.btnOpenDataFolder.Location = new System.Drawing.Point(12, 354);
 			this.btnOpenDataFolder.Name = "btnOpenDataFolder";
 			this.btnOpenDataFolder.Size = new System.Drawing.Size(146, 23);
 			this.btnOpenDataFolder.TabIndex = 30;
@@ -327,7 +325,7 @@
 			// btnOpenWebInterface
 			// 
 			this.btnOpenWebInterface.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.btnOpenWebInterface.Location = new System.Drawing.Point(12, 410);
+			this.btnOpenWebInterface.Location = new System.Drawing.Point(12, 383);
 			this.btnOpenWebInterface.Name = "btnOpenWebInterface";
 			this.btnOpenWebInterface.Size = new System.Drawing.Size(146, 23);
 			this.btnOpenWebInterface.TabIndex = 50;
@@ -349,7 +347,7 @@
 			// btnOK
 			// 
 			this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.btnOK.Location = new System.Drawing.Point(183, 410);
+			this.btnOK.Location = new System.Drawing.Point(183, 383);
 			this.btnOK.Name = "btnOK";
 			this.btnOK.Size = new System.Drawing.Size(146, 23);
 			this.btnOK.TabIndex = 60;
@@ -374,37 +372,11 @@
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Sync with another MonitorControl server";
 			// 
-			// btnInterceptionInstall
-			// 
-			this.btnInterceptionInstall.Location = new System.Drawing.Point(12, 209);
-			this.btnInterceptionInstall.Name = "btnInterceptionInstall";
-			this.btnInterceptionInstall.Size = new System.Drawing.Size(153, 23);
-			this.btnInterceptionInstall.TabIndex = 13;
-			this.btnInterceptionInstall.Text = "Install interception driver";
-			this.toolTip1.SetToolTip(this.btnInterceptionInstall, "The \"interception\" driver can simulate mouse movement at a very low level to wake" +
-        " monitors more reliably.");
-			this.btnInterceptionInstall.UseVisualStyleBackColor = true;
-			this.btnInterceptionInstall.Click += new System.EventHandler(this.btnInterceptionInstall_Click);
-			// 
-			// btnInterceptionUninstall
-			// 
-			this.btnInterceptionUninstall.Location = new System.Drawing.Point(171, 209);
-			this.btnInterceptionUninstall.Name = "btnInterceptionUninstall";
-			this.btnInterceptionUninstall.Size = new System.Drawing.Size(158, 23);
-			this.btnInterceptionUninstall.TabIndex = 14;
-			this.btnInterceptionUninstall.Text = "Uninstall interception driver";
-			this.toolTip1.SetToolTip(this.btnInterceptionUninstall, "The \"interception\" driver can simulate mouse movement at a very low level to wake" +
-        " monitors more reliably.");
-			this.btnInterceptionUninstall.UseVisualStyleBackColor = true;
-			this.btnInterceptionUninstall.Click += new System.EventHandler(this.btnInterceptionUninstall_Click);
-			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(341, 445);
-			this.Controls.Add(this.btnInterceptionUninstall);
-			this.Controls.Add(this.btnInterceptionInstall);
+			this.ClientSize = new System.Drawing.Size(341, 418);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.btnOK);
 			this.Controls.Add(this.cbStartAutomatically);
@@ -465,8 +437,6 @@
 		private System.Windows.Forms.ComboBox ddlSyncFailureAction;
 		private System.Windows.Forms.CheckBox cbSyncHTTPS;
 		private System.Windows.Forms.CheckBox cbSyncMuteWhenOff;
-		private System.Windows.Forms.Button btnInterceptionInstall;
-		private System.Windows.Forms.Button btnInterceptionUninstall;
 	}
 }
 

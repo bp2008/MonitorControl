@@ -1,5 +1,6 @@
 ﻿using BPUtil;
 using Microsoft.Win32;
+using Microsoft.Win32.TaskScheduler;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,6 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Action = System.Action;
 
 namespace MonitorControl
 {
@@ -23,11 +25,11 @@ namespace MonitorControl
 
 			try
 			{
-				cbStartAutomatically.Checked = GetStartup();
+				cbStartAutomatically.Checked = CheckAutomaticStartup();
 			}
 			catch (Exception)
 			{
-				MessageBox.Show("Insufficient permission to access registry.");
+				MessageBox.Show("Insufficient permission to access Task Scheduler.");
 			}
 
 			nudHttpPort.Value = Program.settings.http_port;
@@ -170,55 +172,72 @@ namespace MonitorControl
 		{
 			try
 			{
-				SetStartup(cbStartAutomatically.Checked);
+				if (cbStartAutomatically.Checked)
+				{
+					CreateStartupTask();
+				}
+				else
+				{
+					DeleteStartupTask();
+				}
 			}
-			catch (Exception)
+			catch (Exception ex)
 			{
-				MessageBox.Show("Insufficient permission to access registry.");
+				MessageBox.Show(ex.ToString());
 			}
 		}
 
-		private void SetStartup(bool startAutomatically)
+		public static void MigrateLegacyAutostart()
 		{
 			RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
-			if (startAutomatically)
-				rk.SetValue(Globals.AssemblyName, Application.ExecutablePath);
-			else
+			object value = rk.GetValue(Globals.AssemblyName);
+
+			if (value != null && (value is string))
+			{
+				CreateStartupTask();
 				rk.DeleteValue(Globals.AssemblyName, false);
+			}
 		}
-
-		private bool GetStartup()
+		private const string TaskName = "MonitorControl Automatic Startup";
+		private static void CreateStartupTask()
 		{
-			RegistryKey rk = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", false);
+			if (CheckAutomaticStartup())
+				DeleteStartupTask();
+			using (TaskService ts = new TaskService())
+			{
+				TaskDefinition td = ts.NewTask();
+				td.RegistrationInfo.Description = "Start the MonitorControl tray application as administrator.";
+				td.Triggers.Add(new LogonTrigger());
+				td.Actions.Add(new ExecAction(Globals.ApplicationDirectoryBase + Globals.ExecutableNameWithExtension, null, Globals.ApplicationRoot));
+				td.Principal.RunLevel = TaskRunLevel.Highest;
 
-			object value = rk.GetValue(Globals.AssemblyTitle);
-
-			if (value != null && (value is string) && Application.ExecutablePath.Equals((string)value, StringComparison.OrdinalIgnoreCase))
-				return true;
-			else
-				return false;
+				ts.RootFolder.RegisterTaskDefinition(TaskName, td);
+			}
+		}
+		private static void DeleteStartupTask()
+		{
+			using (TaskService ts = new TaskService())
+			{
+				if (ts.RootFolder.Tasks.Any(t => t.Name == TaskName))
+					ts.RootFolder.DeleteTask(TaskName);
+			}
+		}
+		/// <summary>
+		/// Returns true if the program is configured to start automatically.
+		/// </summary>
+		/// <returns></returns>
+		private static bool CheckAutomaticStartup()
+		{
+			using (TaskService ts = new TaskService())
+			{
+				return ts.RootFolder.Tasks.Any(t => t.Name == TaskName);
+			}
 		}
 
 		private void btnOK_Click(object sender, EventArgs e)
 		{
 			this.Close();
-		}
-
-		private void btnInterceptionInstall_Click(object sender, EventArgs e)
-		{
-			if (!BPUtil.NativeWin.Admin.StartAsAdmin("cmd", "/C \"" + Globals.ApplicationDirectoryBase + "install-interception.exe\" /install & pause", Globals.ApplicationDirectoryBase))
-			{
-				MessageBox.Show("Failed to run interception installer. Please run \"install-interception.exe /install\" from an elevated command prompt.");
-			}
-		}
-
-		private void btnInterceptionUninstall_Click(object sender, EventArgs e)
-		{
-			if (!BPUtil.NativeWin.Admin.StartAsAdmin("cmd", "/C \"" + Globals.ApplicationDirectoryBase + "install-interception.exe\" /uninstall & pause", Globals.ApplicationDirectoryBase))
-			{
-				MessageBox.Show("Failed to run interception uninstaller. Please run \"install-interception.exe /uninstall\" from an elevated command prompt.");
-			}
 		}
 	}
 }

@@ -74,9 +74,16 @@
     <ErrorReport>prompt</ErrorReport>
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.Win32.TaskScheduler, Version=2.9.2.0, Culture=neutral, PublicKeyToken=e25603a88b3aa7da, processorArchitecture=MSIL">
+      <HintPath>..\packages\TaskScheduler.2.9.2\lib\net452\Microsoft.Win32.TaskScheduler.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -113,6 +120,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="app.manifest" />
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -131,10 +140,6 @@
       <Project>{A4981D8D-DEBF-4B34-B9CE-FF25520A02B7}</Project>
       <Name>BPUtil</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Interceptor\Interceptor.csproj">
-      <Project>{c451a00e-77f1-4f3f-b7ee-27dc712ea316}</Project>
-      <Name>Interceptor</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="icons\close.ico" />
@@ -147,12 +152,10 @@
     <Content Include="icons\Simple_Monitor_Icon.png" />
     <Content Include="icons\Simple_Monitor_Icon.svg" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="interception\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /Y /B "$(ProjectDir)interception\$(PlatformName)\interception.dll" "$(TargetDir)\interception.dll"
-copy /Y /B "$(ProjectDir)interception\install-interception.exe" "$(TargetDir)\install-interception.exe"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>
