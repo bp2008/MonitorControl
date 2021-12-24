@@ -211,6 +211,17 @@ namespace MonitorControl
 				td.Triggers.Add(new LogonTrigger());
 				td.Actions.Add(new ExecAction(Globals.ApplicationDirectoryBase + Globals.ExecutableNameWithExtension, null, Globals.ApplicationRoot));
 				td.Principal.RunLevel = TaskRunLevel.Highest;
+				td.Settings.AllowDemandStart = true;
+				td.Settings.DisallowStartIfOnBatteries = false;
+				td.Settings.ExecutionTimeLimit = TimeSpan.Zero;
+				td.Settings.Hidden = false;
+				td.Settings.RestartCount = 1440;
+				td.Settings.RestartInterval = TimeSpan.FromMinutes(1);
+				td.Settings.RunOnlyIfIdle = false;
+				td.Settings.RunOnlyIfNetworkAvailable = false;
+				td.Settings.StartWhenAvailable = true;
+				td.Settings.StopIfGoingOnBatteries = false;
+				td.Settings.Volatile = false;
 
 				ts.RootFolder.RegisterTaskDefinition(TaskName, td);
 			}
