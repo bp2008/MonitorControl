@@ -90,6 +90,8 @@ namespace MonitorControl
 				{
 					try
 					{
+						if (!Program.settings.syncAllowLocalOverride)
+							lastStatus = MonitorControlServer.currentMonitorStatus;
 						string address = Program.settings.syncAddress;
 						if (!string.IsNullOrWhiteSpace(address))
 						{

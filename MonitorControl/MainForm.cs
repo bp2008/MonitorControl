@@ -41,6 +41,7 @@ namespace MonitorControl
 			ddlSyncFailureAction.SelectedIndex = BPMath.Clamp(Program.settings.syncFailureAction, 0, 2);
 			cbSyncHTTPS.Checked = Program.settings.syncHTTPS;
 			cbSyncMuteWhenOff.Checked = Program.settings.syncMute;
+			cbAllowLocalOverride.Checked = Program.settings.syncAllowLocalOverride;
 
 			SetCurrentHttpPorts();
 		}
@@ -145,6 +146,14 @@ namespace MonitorControl
 			bool old = Program.settings.syncMute;
 			Program.settings.syncMute = cbSyncMuteWhenOff.Checked;
 			if (old != Program.settings.syncMute)
+				Program.settings.Save();
+		}
+
+		private void cbAllowLocalOverride_CheckedChanged(object sender, EventArgs e)
+		{
+			bool old = Program.settings.syncAllowLocalOverride;
+			Program.settings.syncAllowLocalOverride = cbAllowLocalOverride.Checked;
+			if (old != Program.settings.syncAllowLocalOverride)
 				Program.settings.Save();
 		}
 

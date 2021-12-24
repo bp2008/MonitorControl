@@ -23,6 +23,11 @@ namespace MonitorControl
 		/// Mute audio when turning off monitors because of remote server sync.
 		/// </summary>
 		public bool syncMute;
+		/// <summary>
+		/// If enabled, local inputs can un-sync this machine from the remote server until the remote server has another state change.
+		/// If disabled, the synced state is continuously enforced.
+		/// </summary>
+		public bool syncAllowLocalOverride = false;
 
 		/// <summary>
 		/// Returns the <see cref="ip_whitelist"/> string with line breaks converted to Windows format. The XML writer breaks them otherwise.

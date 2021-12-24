@@ -20,7 +20,7 @@ namespace MonitorControl
 	{
 		private static Thread MonitorOffTimerThread;
 		private static Thread thrWaitForWake;
-		private static string currentMonitorStatus = "on";
+		public static string currentMonitorStatus { get; private set; } = "on";
 		private static object myLock = new object();
 		private static bool didMute = false;
 		public MonitorControlServer(int port, int httpsPort = -1, X509Certificate2 cert = null) : base(port, httpsPort, cert)
