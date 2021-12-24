@@ -20,6 +20,9 @@ namespace MonitorControl
 	{
 		private static Thread MonitorOffTimerThread;
 		private static Thread thrWaitForWake;
+		/// <summary>
+		/// A string that is either "on" or "off".
+		/// </summary>
 		public static string currentMonitorStatus { get; private set; } = "on";
 		private static object myLock = new object();
 		private static bool didMute = false;
@@ -195,8 +198,22 @@ namespace MonitorControl
 					p.outputStream.Write(ex.ToString());
 					return;
 				}
-				p.writeSuccess("text/plain");
+				p.writeSuccess("text/plain; charset=utf-8");
 				p.outputStream.Write("move complete. moved " + dx + "," + dy + " " + times + " times with " + delay + " ms delay");
+			}
+			else if (p.requestedPage == "AllowLocalOverride")
+			{
+				Program.settings.syncAllowLocalOverride = true;
+				Program.settings.Save();
+				p.writeSuccess("text/plain; charset=utf-8");
+				p.outputStream.Write("✅ Allow local input to override synced state");
+			}
+			else if (p.requestedPage == "DisallowLocalOverride")
+			{
+				Program.settings.syncAllowLocalOverride = false;
+				Program.settings.Save();
+				p.writeSuccess("text/plain; charset=utf-8");
+				p.outputStream.Write("❌ Allow local input to override synced state");
 			}
 			else
 				successMessage = "";
@@ -237,6 +254,8 @@ namespace MonitorControl
 				+ BuildRow("unmute", "unmutes default audio device")
 				+ BuildRow("getmute", "returns \"muted\" or \"unmuted\"")
 				+ BuildRow("mousemove?dx=2&dy=-2&delay=4&times=5", "moves the mouse cursor up 2px and to the right 2px, 5 times, waiting 4ms between each movement. Max delay 200ms. Max 5 seconds movement per command.")
+				+ BuildRow("AllowLocalOverride", "Enables the setting \"Allow local input to override synced state\"")
+				+ BuildRow("DisallowLocalOverride", "Disables the setting \"Allow local input to override synced state\"")
 				+ "</tbody>"
 				+ "</table>"
 				+ "</body>"
@@ -412,13 +431,21 @@ namespace MonitorControl
 				while (true)
 				{
 					uint inputAge = LastInput.GetLastInputAgeMs();
-					if (inputAge < lastInputAge)
+					if (inputAge < lastInputAge && currentMonitorStatus == "off")
 						break;
 					lastInputAge = inputAge;
 					Thread.Sleep(1000);
 				}
+				bool doPartialWakeLogic = Program.settings.preventAccidentalWakeup && currentMonitorStatus == "off";
+				bool lastOffDidMute = didMute;
+
 				currentMonitorStatus = "on";
 				UnmuteIfNeeded();
+
+				if (doPartialWakeLogic)
+				{
+					PartialWakeLogic(lastOffDidMute);
+				}
 			}
 			catch (ThreadAbortException)
 			{
@@ -438,9 +465,50 @@ namespace MonitorControl
 			}
 		}
 
+		private static void PartialWakeLogic(bool mute, int totalInputs = 1, PartialWakeNotifier pwn = null, int iterations = 0)
+		{
+			const double inputsRequired = 8;
+			const int maxIterations = 100;
+			const int iterationInterval = 100;
+
+			if (totalInputs >= inputsRequired)
+			{
+				// Input requirements met.  Full Wake.
+				if (pwn != null)
+					pwn.Terminate();
+			}
+			else if (iterations < maxIterations)
+			{
+				// Waiting for more inputs.
+				if (pwn == null)
+				{
+					pwn = new PartialWakeNotifier();
+					pwn.Progress = (int)((totalInputs / inputsRequired) * 100);
+					SetTimeout.OnBackground(() => { Application.Run(pwn); }, 0);
+				}
+				pwn.SetSecondsRemaining((int)(((maxIterations - iterations) * iterationInterval) / 1000.0));
+				SetTimeout.OnBackground(() =>
+				{
+					if (LastInput.GetLastInputAgeMs() < maxIterations)
+					{
+						totalInputs++;
+						pwn.Progress = (int)((totalInputs / inputsRequired) * 100);
+					}
+					PartialWakeLogic(mute, totalInputs, pwn, iterations + 1);
+				}, iterationInterval);
+			}
+			else
+			{
+				// Input requires not met.  Go back to sleep.
+				if (pwn != null)
+					pwn.Terminate();
+				Off(mute);
+			}
+		}
+
 		private static void SetMonitorInState(int state)
 		{
-			Console.WriteLine(state);
+			Console.WriteLine("MonitorInState: " + state);
 			DefWindowProc(GetDesktopWindow(), 0x112, (IntPtr)0xF170, (IntPtr)state);
 		}
 		[DllImport("user32.dll", SetLastError = true)]

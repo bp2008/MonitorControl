@@ -35,6 +35,7 @@ namespace MonitorControl
 			nudHttpPort.Value = Program.settings.http_port;
 			nudHttpsPort.Value = Program.settings.https_port;
 			nudIdleMs.Value = Program.settings.idleTimeMs;
+			cbPreventAccidentalWakeup.Checked = Program.settings.preventAccidentalWakeup;
 			txtIpWhitelist.Text = Program.settings.GetIpWhitelistString();
 			txtSyncAddress.Text = Program.settings.syncAddress;
 			nudSyncPort.Value = Program.settings.syncPort;
@@ -154,6 +155,14 @@ namespace MonitorControl
 			bool old = Program.settings.syncAllowLocalOverride;
 			Program.settings.syncAllowLocalOverride = cbAllowLocalOverride.Checked;
 			if (old != Program.settings.syncAllowLocalOverride)
+				Program.settings.Save();
+		}
+
+		private void cbPreventAccidentalWakeup_CheckedChanged(object sender, EventArgs e)
+		{
+			bool old = Program.settings.preventAccidentalWakeup;
+			Program.settings.preventAccidentalWakeup = cbPreventAccidentalWakeup.Checked;
+			if (old != Program.settings.preventAccidentalWakeup)
 				Program.settings.Save();
 		}
 

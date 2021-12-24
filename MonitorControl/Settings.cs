@@ -13,6 +13,10 @@ namespace MonitorControl
 		public int idleTimeMs = 3000;
 		public string ip_whitelist = "127.0.0.1";
 		public string syncAddress = "";
+		/// <summary>
+		/// If enabled, multiple inputs will be required to keep the monitors awake after they've been turned off by this app.
+		/// </summary>
+		public bool preventAccidentalWakeup = false;
 		public int syncPort = 8001;
 		/// <summary>
 		/// (0: No action) …  (1: Turn Off) … (2: Turn On)

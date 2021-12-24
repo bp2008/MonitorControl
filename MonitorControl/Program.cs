@@ -105,6 +105,7 @@ namespace MonitorControl
 				mf = new MainForm();
 				mf.FormClosed += Mf_FormClosed;
 				mf.Show();
+				mf.SetLocationNearMouse();
 			}
 		}
 

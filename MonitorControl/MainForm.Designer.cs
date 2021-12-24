@@ -56,6 +56,7 @@
 			this.cbStartAutomatically = new System.Windows.Forms.CheckBox();
 			this.btnOK = new System.Windows.Forms.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.cbPreventAccidentalWakeup = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.nudHttpPort)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudHttpsPort)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudIdleMs)).BeginInit();
@@ -180,7 +181,7 @@
 			// 
 			this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.label5.AutoSize = true;
-			this.label5.Location = new System.Drawing.Point(12, 237);
+			this.label5.Location = new System.Drawing.Point(12, 259);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(101, 13);
 			this.label5.TabIndex = 10;
@@ -191,7 +192,7 @@
 			// 
 			this.txtIpWhitelist.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.txtIpWhitelist.Location = new System.Drawing.Point(12, 253);
+			this.txtIpWhitelist.Location = new System.Drawing.Point(12, 275);
 			this.txtIpWhitelist.Multiline = true;
 			this.txtIpWhitelist.Name = "txtIpWhitelist";
 			this.txtIpWhitelist.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -204,7 +205,7 @@
 			// 
 			this.btnExitProgram.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.btnExitProgram.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
-			this.btnExitProgram.Location = new System.Drawing.Point(183, 379);
+			this.btnExitProgram.Location = new System.Drawing.Point(183, 401);
 			this.btnExitProgram.Name = "btnExitProgram";
 			this.btnExitProgram.Size = new System.Drawing.Size(146, 23);
 			this.btnExitProgram.TabIndex = 40;
@@ -250,7 +251,7 @@
             0});
 			this.nudSyncPort.Name = "nudSyncPort";
 			this.nudSyncPort.Size = new System.Drawing.Size(72, 20);
-			this.nudSyncPort.TabIndex = 9;
+			this.nudSyncPort.TabIndex = 11;
 			this.toolTip1.SetToolTip(this.nudSyncPort, "[1-65535] HTTP or HTTPS listening port on the server we are synchronizing with.");
 			this.nudSyncPort.Value = new decimal(new int[] {
             1,
@@ -264,7 +265,7 @@
 			this.txtSyncAddress.Location = new System.Drawing.Point(60, 19);
 			this.txtSyncAddress.Name = "txtSyncAddress";
 			this.txtSyncAddress.Size = new System.Drawing.Size(138, 20);
-			this.txtSyncAddress.TabIndex = 8;
+			this.txtSyncAddress.TabIndex = 10;
 			this.toolTip1.SetToolTip(this.txtSyncAddress, "Host name or IP address of the server we are synchronizing with. Leave empty to d" +
         "isable sync.");
 			this.txtSyncAddress.TextChanged += new System.EventHandler(this.txtSyncAddress_TextChanged);
@@ -275,7 +276,7 @@
 			this.cbSyncHTTPS.Location = new System.Drawing.Point(239, 47);
 			this.cbSyncHTTPS.Name = "cbSyncHTTPS";
 			this.cbSyncHTTPS.Size = new System.Drawing.Size(62, 17);
-			this.cbSyncHTTPS.TabIndex = 11;
+			this.cbSyncHTTPS.TabIndex = 13;
 			this.cbSyncHTTPS.Text = "HTTPS";
 			this.toolTip1.SetToolTip(this.cbSyncHTTPS, "Check this box to use HTTPS. Uncheck to use HTTP.");
 			this.cbSyncHTTPS.UseVisualStyleBackColor = true;
@@ -292,7 +293,7 @@
 			this.ddlSyncFailureAction.Location = new System.Drawing.Point(82, 45);
 			this.ddlSyncFailureAction.Name = "ddlSyncFailureAction";
 			this.ddlSyncFailureAction.Size = new System.Drawing.Size(121, 21);
-			this.ddlSyncFailureAction.TabIndex = 10;
+			this.ddlSyncFailureAction.TabIndex = 12;
 			this.toolTip1.SetToolTip(this.ddlSyncFailureAction, "Action to take if the remote server is unreachable.");
 			this.ddlSyncFailureAction.SelectedIndexChanged += new System.EventHandler(this.ddlSyncFailureAction_SelectedIndexChanged);
 			// 
@@ -312,7 +313,7 @@
 			this.cbSyncMuteWhenOff.Location = new System.Drawing.Point(6, 72);
 			this.cbSyncMuteWhenOff.Name = "cbSyncMuteWhenOff";
 			this.cbSyncMuteWhenOff.Size = new System.Drawing.Size(200, 17);
-			this.cbSyncMuteWhenOff.TabIndex = 12;
+			this.cbSyncMuteWhenOff.TabIndex = 14;
 			this.cbSyncMuteWhenOff.Text = "Mute audio when turning off monitors";
 			this.toolTip1.SetToolTip(this.cbSyncMuteWhenOff, "Mute audio when turning off monitors because of remote server sync.\r\n\r\nAudio retu" +
         "rns to previous state when monitors turn back on.");
@@ -325,7 +326,7 @@
 			this.cbAllowLocalOverride.Location = new System.Drawing.Point(6, 95);
 			this.cbAllowLocalOverride.Name = "cbAllowLocalOverride";
 			this.cbAllowLocalOverride.Size = new System.Drawing.Size(218, 17);
-			this.cbAllowLocalOverride.TabIndex = 13;
+			this.cbAllowLocalOverride.TabIndex = 15;
 			this.cbAllowLocalOverride.Text = "Allow local input to override synced state";
 			this.toolTip1.SetToolTip(this.cbAllowLocalOverride, "If enabled, local inputs can un-sync this machine \r\nfrom the remote server until " +
         "the remote server \r\nhas another state change.\r\n\r\nIf disabled, the synced state i" +
@@ -336,7 +337,7 @@
 			// btnOpenDataFolder
 			// 
 			this.btnOpenDataFolder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.btnOpenDataFolder.Location = new System.Drawing.Point(12, 379);
+			this.btnOpenDataFolder.Location = new System.Drawing.Point(12, 401);
 			this.btnOpenDataFolder.Name = "btnOpenDataFolder";
 			this.btnOpenDataFolder.Size = new System.Drawing.Size(146, 23);
 			this.btnOpenDataFolder.TabIndex = 30;
@@ -347,7 +348,7 @@
 			// btnOpenWebInterface
 			// 
 			this.btnOpenWebInterface.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.btnOpenWebInterface.Location = new System.Drawing.Point(12, 408);
+			this.btnOpenWebInterface.Location = new System.Drawing.Point(12, 430);
 			this.btnOpenWebInterface.Name = "btnOpenWebInterface";
 			this.btnOpenWebInterface.Size = new System.Drawing.Size(146, 23);
 			this.btnOpenWebInterface.TabIndex = 50;
@@ -369,7 +370,7 @@
 			// btnOK
 			// 
 			this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.btnOK.Location = new System.Drawing.Point(183, 408);
+			this.btnOK.Location = new System.Drawing.Point(183, 430);
 			this.btnOK.Name = "btnOK";
 			this.btnOK.Size = new System.Drawing.Size(146, 23);
 			this.btnOK.TabIndex = 60;
@@ -388,18 +389,31 @@
 			this.groupBox1.Controls.Add(this.label7);
 			this.groupBox1.Controls.Add(this.nudSyncPort);
 			this.groupBox1.Controls.Add(this.label8);
-			this.groupBox1.Location = new System.Drawing.Point(12, 105);
+			this.groupBox1.Location = new System.Drawing.Point(12, 135);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(317, 121);
-			this.groupBox1.TabIndex = 8;
+			this.groupBox1.TabIndex = 10;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Sync with another MonitorControl server";
+			// 
+			// cbPreventAccidentalWakeup
+			// 
+			this.cbPreventAccidentalWakeup.AutoSize = true;
+			this.cbPreventAccidentalWakeup.Location = new System.Drawing.Point(15, 102);
+			this.cbPreventAccidentalWakeup.Name = "cbPreventAccidentalWakeup";
+			this.cbPreventAccidentalWakeup.Size = new System.Drawing.Size(160, 17);
+			this.cbPreventAccidentalWakeup.TabIndex = 8;
+			this.cbPreventAccidentalWakeup.Text = "Prevent Accidental Wakeup";
+			this.toolTip1.SetToolTip(this.cbPreventAccidentalWakeup, resources.GetString("cbPreventAccidentalWakeup.ToolTip"));
+			this.cbPreventAccidentalWakeup.UseVisualStyleBackColor = true;
+			this.cbPreventAccidentalWakeup.CheckedChanged += new System.EventHandler(this.cbPreventAccidentalWakeup_CheckedChanged);
 			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(341, 443);
+			this.ClientSize = new System.Drawing.Size(341, 465);
+			this.Controls.Add(this.cbPreventAccidentalWakeup);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.btnOK);
 			this.Controls.Add(this.cbStartAutomatically);
@@ -419,6 +433,7 @@
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "MainForm";
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "MonitorControl";
 			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
 			this.Load += new System.EventHandler(this.MainForm_Load);
@@ -461,6 +476,7 @@
 		private System.Windows.Forms.CheckBox cbSyncHTTPS;
 		private System.Windows.Forms.CheckBox cbSyncMuteWhenOff;
 		private System.Windows.Forms.CheckBox cbAllowLocalOverride;
+		private System.Windows.Forms.CheckBox cbPreventAccidentalWakeup;
 	}
 }
 
