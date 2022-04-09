@@ -17,6 +17,7 @@ namespace MonitorControl
 		/// If enabled, multiple inputs will be required to keep the monitors awake after they've been turned off by this app.
 		/// </summary>
 		public bool preventAccidentalWakeup = false;
+		public int inputsRequiredToWake = 0;
 		public int syncPort = 8001;
 		/// <summary>
 		/// (0: No action) …  (1: Turn Off) … (2: Turn On)

@@ -35,7 +35,7 @@ namespace MonitorControl
 			nudHttpPort.Value = Program.settings.http_port;
 			nudHttpsPort.Value = Program.settings.https_port;
 			nudIdleMs.Value = Program.settings.idleTimeMs;
-			cbPreventAccidentalWakeup.Checked = Program.settings.preventAccidentalWakeup;
+			nudInputsRequiredToWake.Value = Program.settings.inputsRequiredToWake;
 			txtIpWhitelist.Text = Program.settings.GetIpWhitelistString();
 			txtSyncAddress.Text = Program.settings.syncAddress;
 			nudSyncPort.Value = Program.settings.syncPort;
@@ -158,11 +158,11 @@ namespace MonitorControl
 				Program.settings.Save();
 		}
 
-		private void cbPreventAccidentalWakeup_CheckedChanged(object sender, EventArgs e)
+		private void nudInputsRequiredToWake_ValueChanged(object sender, EventArgs e)
 		{
-			bool old = Program.settings.preventAccidentalWakeup;
-			Program.settings.preventAccidentalWakeup = cbPreventAccidentalWakeup.Checked;
-			if (old != Program.settings.preventAccidentalWakeup)
+			int old = Program.settings.inputsRequiredToWake;
+			Program.settings.inputsRequiredToWake = (int)nudInputsRequiredToWake.Value;
+			if (old != Program.settings.inputsRequiredToWake)
 				Program.settings.Save();
 		}
 

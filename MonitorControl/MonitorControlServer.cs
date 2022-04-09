@@ -427,16 +427,24 @@ namespace MonitorControl
 			{
 				dynamic args = arg;
 				uint lastInputAge = args.lastInputAge;
+				Stopwatch sleepTimer = Stopwatch.StartNew();
+				int timesToSetOff = 12;
 				// In theory the last input counter will roll over after 49.7102696 days. Or maybe it'll just stop incrementing?  Either way, lets hope the PC doesn't stay idle that long.
 				while (true)
 				{
 					uint inputAge = LastInput.GetLastInputAgeMs();
-					if (inputAge < lastInputAge && currentMonitorStatus == "off")
+					if (inputAge < lastInputAge || currentMonitorStatus != "off")
 						break;
 					lastInputAge = inputAge;
 					Thread.Sleep(1000);
+					if (timesToSetOff > 0 && sleepTimer.ElapsedMilliseconds >= 5000)
+					{
+						sleepTimer.Restart();
+						timesToSetOff--;
+						SetMonitorInState(2);
+					}
 				}
-				bool doPartialWakeLogic = Program.settings.preventAccidentalWakeup && currentMonitorStatus == "off";
+				bool doPartialWakeLogic = Program.settings.inputsRequiredToWake > 1 && currentMonitorStatus == "off";
 				bool lastOffDidMute = didMute;
 
 				currentMonitorStatus = "on";
@@ -467,7 +475,7 @@ namespace MonitorControl
 
 		private static void PartialWakeLogic(bool mute, int totalInputs = 1, PartialWakeNotifier pwn = null, int iterations = 0)
 		{
-			const double inputsRequired = 8;
+			double inputsRequired = BPMath.Clamp(Program.settings.inputsRequiredToWake, 1, 50);
 			const int maxIterations = 100;
 			const int iterationInterval = 100;
 
