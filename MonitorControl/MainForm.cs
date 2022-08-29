@@ -43,6 +43,8 @@ namespace MonitorControl
 			cbSyncHTTPS.Checked = Program.settings.syncHTTPS;
 			cbSyncMuteWhenOff.Checked = Program.settings.syncMute;
 			cbAllowLocalOverride.Checked = Program.settings.syncAllowLocalOverride;
+			txtCommandsOff.Text = Program.settings.commandsOff;
+			txtCommandsOn.Text = Program.settings.commandsOn;
 
 			SetCurrentHttpPorts();
 		}
@@ -163,6 +165,22 @@ namespace MonitorControl
 			int old = Program.settings.inputsRequiredToWake;
 			Program.settings.inputsRequiredToWake = (int)nudInputsRequiredToWake.Value;
 			if (old != Program.settings.inputsRequiredToWake)
+				Program.settings.Save();
+		}
+
+		private void txtCommandsOff_TextChanged(object sender, EventArgs e)
+		{
+			string old = Program.settings.commandsOff;
+			Program.settings.commandsOff = txtCommandsOff.Text;
+			if (old != Program.settings.commandsOff)
+				Program.settings.Save();
+		}
+
+		private void txtCommandsOn_TextChanged(object sender, EventArgs e)
+		{
+			string old = Program.settings.commandsOn;
+			Program.settings.commandsOn = txtCommandsOn.Text;
+			if (old != Program.settings.commandsOn)
 				Program.settings.Save();
 		}
 

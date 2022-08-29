@@ -120,6 +120,9 @@
   <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
   </metadata>
+  <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>17, 17</value>
+  </metadata>
   <data name="nudInputsRequiredToWake.ToolTip" xml:space="preserve">
     <value>If enabled, multiple input events will be required over 
 a 10-second period of time in order for the monitors to 
@@ -146,6 +149,34 @@ remain on after being turned off by this app.
 A notification will be shown in the center of the 
 monitor indicating this, and showing the current 
 progress toward a full wakeup.</value>
+  </data>
+  <data name="txtCommandsOn.ToolTip" xml:space="preserve">
+    <value>Here you can provide commands that will be run when the monitors tun off or on.  
+One command per line.  
+If multiple commands are given for an event, the commands are run concurrently.  
+Any output from the programs is logged to the log file.  
+If the path to the program contains spaces, "the path must be in quotes".</value>
+  </data>
+  <data name="txtCommandsOff.ToolTip" xml:space="preserve">
+    <value>Here you can provide commands that will be run when the monitors tun off or on.  
+One command per line.  
+If multiple commands are given for an event, the commands are run concurrently.  
+Any output from the programs is logged to the log file.  
+If the path to the program contains spaces, "the path must be in quotes".</value>
+  </data>
+  <data name="label11.ToolTip" xml:space="preserve">
+    <value>Here you can provide commands that will be run when the monitors tun off or on.  
+One command per line.  
+If multiple commands are given for an event, the commands are run concurrently.  
+Any output from the programs is logged to the log file.  
+If the path to the program contains spaces, "the path must be in quotes".</value>
+  </data>
+  <data name="label12.ToolTip" xml:space="preserve">
+    <value>Here you can provide commands that will be run when the monitors tun off or on.  
+One command per line.  
+If multiple commands are given for an event, the commands are run concurrently.  
+Any output from the programs is logged to the log file.  
+If the path to the program contains spaces, "the path must be in quotes".</value>
   </data>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="$this.Icon" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">

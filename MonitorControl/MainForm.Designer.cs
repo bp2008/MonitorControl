@@ -51,20 +51,24 @@
 			this.label6 = new System.Windows.Forms.Label();
 			this.cbSyncMuteWhenOff = new System.Windows.Forms.CheckBox();
 			this.cbAllowLocalOverride = new System.Windows.Forms.CheckBox();
+			this.nudInputsRequiredToWake = new System.Windows.Forms.NumericUpDown();
+			this.label9 = new System.Windows.Forms.Label();
+			this.label10 = new System.Windows.Forms.Label();
 			this.btnOpenDataFolder = new System.Windows.Forms.Button();
 			this.btnOpenWebInterface = new System.Windows.Forms.Button();
 			this.cbStartAutomatically = new System.Windows.Forms.CheckBox();
 			this.btnOK = new System.Windows.Forms.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.nudInputsRequiredToWake = new System.Windows.Forms.NumericUpDown();
-			this.label9 = new System.Windows.Forms.Label();
-			this.label10 = new System.Windows.Forms.Label();
+			this.txtCommandsOn = new System.Windows.Forms.TextBox();
+			this.txtCommandsOff = new System.Windows.Forms.TextBox();
+			this.label11 = new System.Windows.Forms.Label();
+			this.label12 = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.nudHttpPort)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudHttpsPort)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudIdleMs)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudSyncPort)).BeginInit();
-			this.groupBox1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.nudInputsRequiredToWake)).BeginInit();
+			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// label1
@@ -206,9 +210,9 @@
 			// 
 			// btnExitProgram
 			// 
-			this.btnExitProgram.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.btnExitProgram.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnExitProgram.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
-			this.btnExitProgram.Location = new System.Drawing.Point(183, 401);
+			this.btnExitProgram.Location = new System.Drawing.Point(548, 401);
 			this.btnExitProgram.Name = "btnExitProgram";
 			this.btnExitProgram.Size = new System.Drawing.Size(146, 23);
 			this.btnExitProgram.TabIndex = 40;
@@ -337,68 +341,6 @@
 			this.cbAllowLocalOverride.UseVisualStyleBackColor = true;
 			this.cbAllowLocalOverride.CheckedChanged += new System.EventHandler(this.cbAllowLocalOverride_CheckedChanged);
 			// 
-			// btnOpenDataFolder
-			// 
-			this.btnOpenDataFolder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.btnOpenDataFolder.Location = new System.Drawing.Point(12, 401);
-			this.btnOpenDataFolder.Name = "btnOpenDataFolder";
-			this.btnOpenDataFolder.Size = new System.Drawing.Size(146, 23);
-			this.btnOpenDataFolder.TabIndex = 30;
-			this.btnOpenDataFolder.Text = "Open Data Folder";
-			this.btnOpenDataFolder.UseVisualStyleBackColor = true;
-			this.btnOpenDataFolder.Click += new System.EventHandler(this.btnOpenDataFolder_Click);
-			// 
-			// btnOpenWebInterface
-			// 
-			this.btnOpenWebInterface.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.btnOpenWebInterface.Location = new System.Drawing.Point(12, 430);
-			this.btnOpenWebInterface.Name = "btnOpenWebInterface";
-			this.btnOpenWebInterface.Size = new System.Drawing.Size(146, 23);
-			this.btnOpenWebInterface.TabIndex = 50;
-			this.btnOpenWebInterface.Text = "Open Web Interface";
-			this.btnOpenWebInterface.UseVisualStyleBackColor = true;
-			this.btnOpenWebInterface.Click += new System.EventHandler(this.btnOpenWebInterface_Click);
-			// 
-			// cbStartAutomatically
-			// 
-			this.cbStartAutomatically.AutoSize = true;
-			this.cbStartAutomatically.Location = new System.Drawing.Point(15, 12);
-			this.cbStartAutomatically.Name = "cbStartAutomatically";
-			this.cbStartAutomatically.Size = new System.Drawing.Size(155, 17);
-			this.cbStartAutomatically.TabIndex = 0;
-			this.cbStartAutomatically.Text = "Start Program Automatically";
-			this.cbStartAutomatically.UseVisualStyleBackColor = true;
-			this.cbStartAutomatically.CheckedChanged += new System.EventHandler(this.cbStartAutomatically_CheckedChanged);
-			// 
-			// btnOK
-			// 
-			this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.btnOK.Location = new System.Drawing.Point(183, 430);
-			this.btnOK.Name = "btnOK";
-			this.btnOK.Size = new System.Drawing.Size(146, 23);
-			this.btnOK.TabIndex = 60;
-			this.btnOK.Text = "OK";
-			this.btnOK.UseVisualStyleBackColor = true;
-			this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
-			// 
-			// groupBox1
-			// 
-			this.groupBox1.Controls.Add(this.cbAllowLocalOverride);
-			this.groupBox1.Controls.Add(this.cbSyncMuteWhenOff);
-			this.groupBox1.Controls.Add(this.label6);
-			this.groupBox1.Controls.Add(this.ddlSyncFailureAction);
-			this.groupBox1.Controls.Add(this.cbSyncHTTPS);
-			this.groupBox1.Controls.Add(this.txtSyncAddress);
-			this.groupBox1.Controls.Add(this.label7);
-			this.groupBox1.Controls.Add(this.nudSyncPort);
-			this.groupBox1.Controls.Add(this.label8);
-			this.groupBox1.Location = new System.Drawing.Point(12, 135);
-			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Size = new System.Drawing.Size(317, 121);
-			this.groupBox1.TabIndex = 10;
-			this.groupBox1.TabStop = false;
-			this.groupBox1.Text = "Sync with another MonitorControl server";
-			// 
 			// nudInputsRequiredToWake
 			// 
 			this.nudInputsRequiredToWake.Location = new System.Drawing.Point(146, 102);
@@ -443,11 +385,117 @@
 			this.label10.Text = "(during 10-second span)";
 			this.toolTip1.SetToolTip(this.label10, resources.GetString("label10.ToolTip"));
 			// 
+			// btnOpenDataFolder
+			// 
+			this.btnOpenDataFolder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.btnOpenDataFolder.Location = new System.Drawing.Point(12, 401);
+			this.btnOpenDataFolder.Name = "btnOpenDataFolder";
+			this.btnOpenDataFolder.Size = new System.Drawing.Size(146, 23);
+			this.btnOpenDataFolder.TabIndex = 30;
+			this.btnOpenDataFolder.Text = "Open Data Folder";
+			this.btnOpenDataFolder.UseVisualStyleBackColor = true;
+			this.btnOpenDataFolder.Click += new System.EventHandler(this.btnOpenDataFolder_Click);
+			// 
+			// btnOpenWebInterface
+			// 
+			this.btnOpenWebInterface.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.btnOpenWebInterface.Location = new System.Drawing.Point(12, 430);
+			this.btnOpenWebInterface.Name = "btnOpenWebInterface";
+			this.btnOpenWebInterface.Size = new System.Drawing.Size(146, 23);
+			this.btnOpenWebInterface.TabIndex = 50;
+			this.btnOpenWebInterface.Text = "Open Web Interface";
+			this.btnOpenWebInterface.UseVisualStyleBackColor = true;
+			this.btnOpenWebInterface.Click += new System.EventHandler(this.btnOpenWebInterface_Click);
+			// 
+			// cbStartAutomatically
+			// 
+			this.cbStartAutomatically.AutoSize = true;
+			this.cbStartAutomatically.Location = new System.Drawing.Point(15, 12);
+			this.cbStartAutomatically.Name = "cbStartAutomatically";
+			this.cbStartAutomatically.Size = new System.Drawing.Size(155, 17);
+			this.cbStartAutomatically.TabIndex = 0;
+			this.cbStartAutomatically.Text = "Start Program Automatically";
+			this.cbStartAutomatically.UseVisualStyleBackColor = true;
+			this.cbStartAutomatically.CheckedChanged += new System.EventHandler(this.cbStartAutomatically_CheckedChanged);
+			// 
+			// btnOK
+			// 
+			this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.btnOK.Location = new System.Drawing.Point(548, 430);
+			this.btnOK.Name = "btnOK";
+			this.btnOK.Size = new System.Drawing.Size(146, 23);
+			this.btnOK.TabIndex = 60;
+			this.btnOK.Text = "OK";
+			this.btnOK.UseVisualStyleBackColor = true;
+			this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
+			// 
+			// groupBox1
+			// 
+			this.groupBox1.Controls.Add(this.cbAllowLocalOverride);
+			this.groupBox1.Controls.Add(this.cbSyncMuteWhenOff);
+			this.groupBox1.Controls.Add(this.label6);
+			this.groupBox1.Controls.Add(this.ddlSyncFailureAction);
+			this.groupBox1.Controls.Add(this.cbSyncHTTPS);
+			this.groupBox1.Controls.Add(this.txtSyncAddress);
+			this.groupBox1.Controls.Add(this.label7);
+			this.groupBox1.Controls.Add(this.nudSyncPort);
+			this.groupBox1.Controls.Add(this.label8);
+			this.groupBox1.Location = new System.Drawing.Point(12, 135);
+			this.groupBox1.Name = "groupBox1";
+			this.groupBox1.Size = new System.Drawing.Size(317, 121);
+			this.groupBox1.TabIndex = 10;
+			this.groupBox1.TabStop = false;
+			this.groupBox1.Text = "Sync with another MonitorControl server";
+			// 
+			// txtCommandsOn
+			// 
+			this.txtCommandsOn.Location = new System.Drawing.Point(335, 227);
+			this.txtCommandsOn.Multiline = true;
+			this.txtCommandsOn.Name = "txtCommandsOn";
+			this.txtCommandsOn.Size = new System.Drawing.Size(359, 168);
+			this.txtCommandsOn.TabIndex = 25;
+			this.toolTip1.SetToolTip(this.txtCommandsOn, resources.GetString("txtCommandsOn.ToolTip"));
+			this.txtCommandsOn.TextChanged += new System.EventHandler(this.txtCommandsOn_TextChanged);
+			// 
+			// txtCommandsOff
+			// 
+			this.txtCommandsOff.Location = new System.Drawing.Point(335, 31);
+			this.txtCommandsOff.Multiline = true;
+			this.txtCommandsOff.Name = "txtCommandsOff";
+			this.txtCommandsOff.Size = new System.Drawing.Size(359, 168);
+			this.txtCommandsOff.TabIndex = 24;
+			this.toolTip1.SetToolTip(this.txtCommandsOff, resources.GetString("txtCommandsOff.ToolTip"));
+			this.txtCommandsOff.TextChanged += new System.EventHandler(this.txtCommandsOff_TextChanged);
+			// 
+			// label11
+			// 
+			this.label11.AutoSize = true;
+			this.label11.Location = new System.Drawing.Point(335, 13);
+			this.label11.Name = "label11";
+			this.label11.Size = new System.Drawing.Size(269, 13);
+			this.label11.TabIndex = 65;
+			this.label11.Text = "Additional commands to run when turning monitors OFF:";
+			this.toolTip1.SetToolTip(this.label11, resources.GetString("label11.ToolTip"));
+			// 
+			// label12
+			// 
+			this.label12.AutoSize = true;
+			this.label12.Location = new System.Drawing.Point(335, 211);
+			this.label12.Name = "label12";
+			this.label12.Size = new System.Drawing.Size(265, 13);
+			this.label12.TabIndex = 66;
+			this.label12.Text = "Additional commands to run when turning monitors ON:";
+			this.toolTip1.SetToolTip(this.label12, resources.GetString("label12.ToolTip"));
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(341, 465);
+			this.ClientSize = new System.Drawing.Size(706, 465);
+			this.Controls.Add(this.label12);
+			this.Controls.Add(this.label11);
+			this.Controls.Add(this.txtCommandsOff);
+			this.Controls.Add(this.txtCommandsOn);
 			this.Controls.Add(this.label10);
 			this.Controls.Add(this.label9);
 			this.Controls.Add(this.nudInputsRequiredToWake);
@@ -478,9 +526,9 @@
 			((System.ComponentModel.ISupportInitialize)(this.nudHttpsPort)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudIdleMs)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudSyncPort)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.nudInputsRequiredToWake)).EndInit();
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox1.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)(this.nudInputsRequiredToWake)).EndInit();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -517,6 +565,10 @@
 		private System.Windows.Forms.NumericUpDown nudInputsRequiredToWake;
 		private System.Windows.Forms.Label label9;
 		private System.Windows.Forms.Label label10;
+		private System.Windows.Forms.TextBox txtCommandsOn;
+		private System.Windows.Forms.TextBox txtCommandsOff;
+		private System.Windows.Forms.Label label11;
+		private System.Windows.Forms.Label label12;
 	}
 }
 

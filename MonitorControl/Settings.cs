@@ -33,6 +33,14 @@ namespace MonitorControl
 		/// If disabled, the synced state is continuously enforced.
 		/// </summary>
 		public bool syncAllowLocalOverride = false;
+		/// <summary>
+		/// Commands to run when turning off monitors (one command per line).
+		/// </summary>
+		public string commandsOff = "";
+		/// <summary>
+		/// Commands to run when turning on monitors (one command per line).
+		/// </summary>
+		public string commandsOn = "";
 
 		/// <summary>
 		/// Returns the <see cref="ip_whitelist"/> string with line breaks converted to Windows format. The XML writer breaks them otherwise.

@@ -448,6 +448,7 @@ namespace MonitorControl
 				bool lastOffDidMute = didMute;
 
 				currentMonitorStatus = "on";
+				RunAdditionalCommandsInBackground(true);
 				UnmuteIfNeeded();
 
 				if (doPartialWakeLogic)
@@ -513,12 +514,68 @@ namespace MonitorControl
 				Off(mute);
 			}
 		}
+		private static EventWaitHandle additionalCommandsLock = new EventWaitHandle(true, EventResetMode.AutoReset);
+		private static void RunAdditionalCommandsInBackground(bool on)
+		{
+			// We won't trigger new commands to run while commands are already running.
+			additionalCommandsLock.WaitOne();
+			SetTimeout.OnBackground(() =>
+			{
+				try
+				{
+					string commandStr = on ? Program.settings.commandsOn : Program.settings.commandsOff;
+					string[] commands = commandStr
+						.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
+						.Select(cmd => cmd.Trim())
+						.ToArray();
+					List<ProcessRunnerHandle> processes = new List<ProcessRunnerHandle>();
+					foreach (string cmdRaw in commands)
+					{
+						string cmd = cmdRaw;
+						if (!string.IsNullOrWhiteSpace(cmd))
+						{
+							string args = "";
+							if (cmd.StartsWith("\""))
+							{
+								int idxSecondQuote = cmd.IndexOf('"', 1);
+								if (idxSecondQuote > -1)
+								{
+									args = cmd.Substring(idxSecondQuote + 1).Trim();
+									cmd = cmd.Substring(1, idxSecondQuote - 1);
+								}
+							}
+							Logger.Info(cmd + " " + args);
+							ProcessRunnerHandle proc = ProcessRunner.RunProcess(cmd, args, std =>
+							{
+								if (!string.IsNullOrEmpty(std))
+									Logger.Info(cmd + ": " + std);
+							}, err =>
+							{
+								if (!string.IsNullOrEmpty(err))
+									Logger.Info(cmd + ": " + err);
+							});
+							processes.Add(proc);
+						}
+					}
+					foreach (ProcessRunnerHandle proc in processes)
+					{
+						proc.WaitForExit();
+					}
+				}
+				finally
+				{
+					additionalCommandsLock.Set();
+				}
+			}, 0);
+		}
 
 		private static void SetMonitorInState(int state)
 		{
 			Console.WriteLine("MonitorInState: " + state);
 			DefWindowProc(GetDesktopWindow(), 0x112, (IntPtr)0xF170, (IntPtr)state);
+			RunAdditionalCommandsInBackground(state == -1);
 		}
+
 		[DllImport("user32.dll", SetLastError = true)]
 		private static extern bool PostMessage(IntPtr hWnd, uint Msg, IntPtr wParam, IntPtr lParam);
 		[DllImport("user32.dll")]
