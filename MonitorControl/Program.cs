@@ -32,7 +32,7 @@ namespace MonitorControl
 
 				Directory.CreateDirectory(Globals.WritableDirectoryBase);
 				Directory.CreateDirectory(Globals.WritableDirectoryBase + "Logs/");
-				Globals.OverrideErrorFilePath(() => Globals.WritableDirectoryBase + "Logs/" + Globals.AssemblyName + "_" + DateTime.Now.Year + "_" + DateTime.Now.Month + ".txt");
+				Globals.OverrideErrorFilePath(() => Globals.WritableDirectoryBase + "Logs/" + Globals.AssemblyName + "_" + DateTime.Now.Year + "_" + DateTime.Now.Month.ToString().PadLeft(2, '0') + ".txt");
 				Environment.CurrentDirectory = Globals.WritableDirectoryBase;
 
 				Logger.CatchAll();

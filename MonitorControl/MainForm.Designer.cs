@@ -54,15 +54,17 @@
 			this.nudInputsRequiredToWake = new System.Windows.Forms.NumericUpDown();
 			this.label9 = new System.Windows.Forms.Label();
 			this.label10 = new System.Windows.Forms.Label();
+			this.txtCommandsOn = new System.Windows.Forms.TextBox();
+			this.txtCommandsOff = new System.Windows.Forms.TextBox();
+			this.label11 = new System.Windows.Forms.Label();
+			this.label12 = new System.Windows.Forms.Label();
+			this.label13 = new System.Windows.Forms.Label();
+			this.txtCommandsOffAfterDelay = new System.Windows.Forms.TextBox();
 			this.btnOpenDataFolder = new System.Windows.Forms.Button();
 			this.btnOpenWebInterface = new System.Windows.Forms.Button();
 			this.cbStartAutomatically = new System.Windows.Forms.CheckBox();
 			this.btnOK = new System.Windows.Forms.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
-			this.txtCommandsOn = new System.Windows.Forms.TextBox();
-			this.txtCommandsOff = new System.Windows.Forms.TextBox();
-			this.label11 = new System.Windows.Forms.Label();
-			this.label12 = new System.Windows.Forms.Label();
 			((System.ComponentModel.ISupportInitialize)(this.nudHttpPort)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudHttpsPort)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudIdleMs)).BeginInit();
@@ -385,6 +387,66 @@
 			this.label10.Text = "(during 10-second span)";
 			this.toolTip1.SetToolTip(this.label10, resources.GetString("label10.ToolTip"));
 			// 
+			// txtCommandsOn
+			// 
+			this.txtCommandsOn.Location = new System.Drawing.Point(335, 275);
+			this.txtCommandsOn.Multiline = true;
+			this.txtCommandsOn.Name = "txtCommandsOn";
+			this.txtCommandsOn.Size = new System.Drawing.Size(359, 120);
+			this.txtCommandsOn.TabIndex = 26;
+			this.toolTip1.SetToolTip(this.txtCommandsOn, resources.GetString("txtCommandsOn.ToolTip"));
+			this.txtCommandsOn.TextChanged += new System.EventHandler(this.txtCommandsOn_TextChanged);
+			// 
+			// txtCommandsOff
+			// 
+			this.txtCommandsOff.Location = new System.Drawing.Point(335, 31);
+			this.txtCommandsOff.Multiline = true;
+			this.txtCommandsOff.Name = "txtCommandsOff";
+			this.txtCommandsOff.Size = new System.Drawing.Size(359, 91);
+			this.txtCommandsOff.TabIndex = 24;
+			this.toolTip1.SetToolTip(this.txtCommandsOff, resources.GetString("txtCommandsOff.ToolTip"));
+			this.txtCommandsOff.TextChanged += new System.EventHandler(this.txtCommandsOff_TextChanged);
+			// 
+			// label11
+			// 
+			this.label11.AutoSize = true;
+			this.label11.Location = new System.Drawing.Point(335, 13);
+			this.label11.Name = "label11";
+			this.label11.Size = new System.Drawing.Size(269, 13);
+			this.label11.TabIndex = 65;
+			this.label11.Text = "Additional commands to run when turning monitors OFF:";
+			this.toolTip1.SetToolTip(this.label11, resources.GetString("label11.ToolTip"));
+			// 
+			// label12
+			// 
+			this.label12.AutoSize = true;
+			this.label12.Location = new System.Drawing.Point(335, 259);
+			this.label12.Name = "label12";
+			this.label12.Size = new System.Drawing.Size(265, 13);
+			this.label12.TabIndex = 66;
+			this.label12.Text = "Additional commands to run when turning monitors ON:";
+			this.toolTip1.SetToolTip(this.label12, resources.GetString("label12.ToolTip"));
+			// 
+			// label13
+			// 
+			this.label13.Location = new System.Drawing.Point(335, 125);
+			this.label13.Name = "label13";
+			this.label13.Size = new System.Drawing.Size(359, 32);
+			this.label13.TabIndex = 68;
+			this.label13.Text = "Additional commands to run 9 seconds after turning monitors OFF, if state is stil" +
+    "l OFF:";
+			this.toolTip1.SetToolTip(this.label13, resources.GetString("label13.ToolTip"));
+			// 
+			// txtCommandsOffAfterDelay
+			// 
+			this.txtCommandsOffAfterDelay.Location = new System.Drawing.Point(335, 160);
+			this.txtCommandsOffAfterDelay.Multiline = true;
+			this.txtCommandsOffAfterDelay.Name = "txtCommandsOffAfterDelay";
+			this.txtCommandsOffAfterDelay.Size = new System.Drawing.Size(359, 96);
+			this.txtCommandsOffAfterDelay.TabIndex = 25;
+			this.toolTip1.SetToolTip(this.txtCommandsOffAfterDelay, resources.GetString("txtCommandsOffAfterDelay.ToolTip"));
+			this.txtCommandsOffAfterDelay.TextChanged += new System.EventHandler(this.txtCommandsOffAfterDelay_TextChanged);
+			// 
 			// btnOpenDataFolder
 			// 
 			this.btnOpenDataFolder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
@@ -447,51 +509,12 @@
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Sync with another MonitorControl server";
 			// 
-			// txtCommandsOn
-			// 
-			this.txtCommandsOn.Location = new System.Drawing.Point(335, 227);
-			this.txtCommandsOn.Multiline = true;
-			this.txtCommandsOn.Name = "txtCommandsOn";
-			this.txtCommandsOn.Size = new System.Drawing.Size(359, 168);
-			this.txtCommandsOn.TabIndex = 25;
-			this.toolTip1.SetToolTip(this.txtCommandsOn, resources.GetString("txtCommandsOn.ToolTip"));
-			this.txtCommandsOn.TextChanged += new System.EventHandler(this.txtCommandsOn_TextChanged);
-			// 
-			// txtCommandsOff
-			// 
-			this.txtCommandsOff.Location = new System.Drawing.Point(335, 31);
-			this.txtCommandsOff.Multiline = true;
-			this.txtCommandsOff.Name = "txtCommandsOff";
-			this.txtCommandsOff.Size = new System.Drawing.Size(359, 168);
-			this.txtCommandsOff.TabIndex = 24;
-			this.toolTip1.SetToolTip(this.txtCommandsOff, resources.GetString("txtCommandsOff.ToolTip"));
-			this.txtCommandsOff.TextChanged += new System.EventHandler(this.txtCommandsOff_TextChanged);
-			// 
-			// label11
-			// 
-			this.label11.AutoSize = true;
-			this.label11.Location = new System.Drawing.Point(335, 13);
-			this.label11.Name = "label11";
-			this.label11.Size = new System.Drawing.Size(269, 13);
-			this.label11.TabIndex = 65;
-			this.label11.Text = "Additional commands to run when turning monitors OFF:";
-			this.toolTip1.SetToolTip(this.label11, resources.GetString("label11.ToolTip"));
-			// 
-			// label12
-			// 
-			this.label12.AutoSize = true;
-			this.label12.Location = new System.Drawing.Point(335, 211);
-			this.label12.Name = "label12";
-			this.label12.Size = new System.Drawing.Size(265, 13);
-			this.label12.TabIndex = 66;
-			this.label12.Text = "Additional commands to run when turning monitors ON:";
-			this.toolTip1.SetToolTip(this.label12, resources.GetString("label12.ToolTip"));
-			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(706, 465);
+			this.Controls.Add(this.label13);
 			this.Controls.Add(this.label12);
 			this.Controls.Add(this.label11);
 			this.Controls.Add(this.txtCommandsOff);
@@ -515,6 +538,7 @@
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.nudHttpPort);
 			this.Controls.Add(this.label1);
+			this.Controls.Add(this.txtCommandsOffAfterDelay);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "MainForm";
@@ -569,6 +593,8 @@
 		private System.Windows.Forms.TextBox txtCommandsOff;
 		private System.Windows.Forms.Label label11;
 		private System.Windows.Forms.Label label12;
+		private System.Windows.Forms.Label label13;
+		private System.Windows.Forms.TextBox txtCommandsOffAfterDelay;
 	}
 }
 

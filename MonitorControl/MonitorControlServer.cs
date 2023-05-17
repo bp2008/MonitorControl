@@ -68,8 +68,10 @@ namespace MonitorControl
 			}
 			else if (p.requestedPage == "standby")
 			{
+				OffTracker.NotifyMonitorOff();
 				currentMonitorStatus = "off";
 				SetMonitorInState(1);
+				RunAdditionalCommandsInBackground(CommandSet.Off);
 			}
 			else if (p.requestedPage == "status")
 			{
@@ -285,8 +287,10 @@ namespace MonitorControl
 		public static void On(HttpProcessor p)
 		{
 			UnmuteIfNeeded();
+			OffTracker.NotifyMonitorOn();
 			currentMonitorStatus = "on";
 			SetMonitorInState(-1);
+			RunAdditionalCommandsInBackground(CommandSet.On);
 			lock (myLock)
 			{
 				StopMonitorOffThread();
@@ -323,8 +327,10 @@ namespace MonitorControl
 		{
 			UnmuteIfNeeded();
 
+			OffTracker.NotifyMonitorOff();
 			currentMonitorStatus = "off";
 			SetMonitorInState(2);
+			RunAdditionalCommandsInBackground(CommandSet.Off);
 
 			uint lastInputAge = LastInput.GetLastInputAgeMs();
 			lock (myLock)
@@ -384,8 +390,10 @@ namespace MonitorControl
 			try
 			{
 				Thread.Sleep((int)arg * 1000);
+				OffTracker.NotifyMonitorOff();
 				currentMonitorStatus = "off";
 				SetMonitorInState(2);
+				RunAdditionalCommandsInBackground(CommandSet.Off);
 			}
 			catch (ThreadAbortException)
 			{
@@ -436,6 +444,15 @@ namespace MonitorControl
 					if (inputAge < lastInputAge || currentMonitorStatus != "off")
 						break;
 					lastInputAge = inputAge;
+					if (!OffTracker.DidExecuteDelayedOffCommands
+						&& (
+						/*inputAge > OffTracker.DelayedOffCommandsDelayMs ||*/
+						OffTracker.TimeSinceMonitorsTurnedOff > OffTracker.DelayedOffCommandsDelayMs
+						))
+					{
+						RunAdditionalCommandsInBackground(CommandSet.OffAfterDelay);
+						OffTracker.NotifyExecutedDelayedOffCommands();
+					}
 					Thread.Sleep(1000);
 					if (timesToSetOff > 0 && sleepTimer.ElapsedMilliseconds >= 5000)
 					{
@@ -448,7 +465,7 @@ namespace MonitorControl
 				bool lastOffDidMute = didMute;
 
 				currentMonitorStatus = "on";
-				RunAdditionalCommandsInBackground(true);
+				RunAdditionalCommandsInBackground(CommandSet.On);
 				UnmuteIfNeeded();
 
 				if (doPartialWakeLogic)
@@ -483,6 +500,7 @@ namespace MonitorControl
 			if (totalInputs >= inputsRequired)
 			{
 				// Input requirements met.  Full Wake.
+				OffTracker.NotifyMonitorOn();
 				if (pwn != null)
 					pwn.Terminate();
 			}
@@ -515,7 +533,7 @@ namespace MonitorControl
 			}
 		}
 		private static EventWaitHandle additionalCommandsLock = new EventWaitHandle(true, EventResetMode.AutoReset);
-		private static void RunAdditionalCommandsInBackground(bool on)
+		private static void RunAdditionalCommandsInBackground(CommandSet commandSet)
 		{
 			// We won't trigger new commands to run while commands are already running.
 			additionalCommandsLock.WaitOne();
@@ -523,12 +541,19 @@ namespace MonitorControl
 			{
 				try
 				{
-					string commandStr = on ? Program.settings.commandsOn : Program.settings.commandsOff;
+					string commandStr;
+					if (commandSet == CommandSet.Off)
+						commandStr = Program.settings.commandsOff;
+					else if (commandSet == CommandSet.OffAfterDelay)
+						commandStr = Program.settings.commandsOffAfterDelay;
+					else
+						commandStr = Program.settings.commandsOn;
+
 					string[] commands = commandStr
 						.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
 						.Select(cmd => cmd.Trim())
 						.ToArray();
-					List<ProcessRunnerHandle> processes = new List<ProcessRunnerHandle>();
+					//List<ProcessRunnerHandle> processes = new List<ProcessRunnerHandle>();
 					foreach (string cmdRaw in commands)
 					{
 						string cmd = cmdRaw;
@@ -554,13 +579,15 @@ namespace MonitorControl
 								if (!string.IsNullOrEmpty(err))
 									Logger.Info(cmd + ": " + err);
 							});
-							processes.Add(proc);
+							proc.WaitForExit();
+							Thread.Sleep(1000);
+							//processes.Add(proc);
 						}
 					}
-					foreach (ProcessRunnerHandle proc in processes)
-					{
-						proc.WaitForExit();
-					}
+					//foreach (ProcessRunnerHandle proc in processes)
+					//{
+					//	proc.WaitForExit();
+					//}
 				}
 				finally
 				{
@@ -573,7 +600,6 @@ namespace MonitorControl
 		{
 			Console.WriteLine("MonitorInState: " + state);
 			DefWindowProc(GetDesktopWindow(), 0x112, (IntPtr)0xF170, (IntPtr)state);
-			RunAdditionalCommandsInBackground(state == -1);
 		}
 
 		[DllImport("user32.dll", SetLastError = true)]
@@ -582,6 +608,13 @@ namespace MonitorControl
 		static extern IntPtr DefWindowProc(IntPtr hWnd, uint uMsg, IntPtr wParam, IntPtr lParam);
 		[DllImport("user32.dll", SetLastError = false)]
 		static extern IntPtr GetDesktopWindow();
+	}
+
+	public enum CommandSet
+	{
+		Off,
+		OffAfterDelay,
+		On
 	}
 }
 

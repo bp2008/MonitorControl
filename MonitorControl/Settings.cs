@@ -38,6 +38,10 @@ namespace MonitorControl
 		/// </summary>
 		public string commandsOff = "";
 		/// <summary>
+		/// Commands to run after a long delay after turning off monitors (one command per line).
+		/// </summary>
+		public string commandsOffAfterDelay = "";
+		/// <summary>
 		/// Commands to run when turning on monitors (one command per line).
 		/// </summary>
 		public string commandsOn = "";
@@ -48,7 +52,15 @@ namespace MonitorControl
 		/// <returns></returns>
 		public string GetIpWhitelistString()
 		{
-			return ip_whitelist.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n");
+			return FixStoredString(ip_whitelist);
+		}
+		/// <summary>
+		/// Returns the string with line breaks converted to Windows format. The XML writer breaks them otherwise.
+		/// </summary>
+		/// <returns></returns>
+		public static string FixStoredString(string storedString)
+		{
+			return storedString.Replace("\r\n", "\n").Replace("\r", "\n").Replace("\n", "\r\n");
 		}
 
 		public bool IpIsWhitelisted(string ip)
