@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using BPUtil;
+using BPUtil.SimpleHttp;
 
 namespace MonitorControl
 {
@@ -21,15 +22,6 @@ namespace MonitorControl
 		/// An event which is raised when the http server binds a socket, indicating that a listening port number may have changed.
 		/// </summary>
 		public event EventHandler<string> SocketBound = delegate { };
-
-		/// <summary>
-		/// Currently active http port.
-		/// </summary>
-		public int http_port { get; private set; }
-		/// <summary>
-		/// Currently active https port.
-		/// </summary>
-		public int https_port { get; private set; }
 
 		Thread thrSyncWithOtherServer;
 		/// <summary>
@@ -48,11 +40,10 @@ namespace MonitorControl
 		{
 			Stop();
 			Logger.StartLoggingThreads();
-			http_port = -1;
-			https_port = -1;
-			httpServer = new MonitorControlServer(Program.settings.http_port, Program.settings.https_port);
+
+			httpServer = new MonitorControlServer();
 			httpServer.SocketBound += HttpServer_SocketBound;
-			httpServer.Start();
+			httpServer.SetBindings(Program.settings.http_port, Program.settings.https_port);
 
 			thrSyncWithOtherServer = new Thread(SyncWithOtherServer);
 			thrSyncWithOtherServer.IsBackground = true;
@@ -74,9 +65,12 @@ namespace MonitorControl
 
 		private void HttpServer_SocketBound(object sender, string e)
 		{
-			http_port = httpServer.Port_http;
-			https_port = httpServer.Port_https;
 			SocketBound(sender, e);
+		}
+
+		public HttpServer.Binding[] GetBindings()
+		{
+			return httpServer.GetBindings();
 		}
 
 		private void SyncWithOtherServer()

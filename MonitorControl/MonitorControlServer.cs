@@ -26,7 +26,7 @@ namespace MonitorControl
 		public static string currentMonitorStatus { get; private set; } = "on";
 		private static object myLock = new object();
 		private static bool didMute = false;
-		public MonitorControlServer(int port, int httpsPort = -1, X509Certificate2 cert = null) : base(port, httpsPort, cert)
+		public MonitorControlServer(X509Certificate2 cert = null) : base(cert == null ? null : new SimpleCertificateSelector(cert))
 		{
 		}
 

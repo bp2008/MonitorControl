@@ -70,7 +70,7 @@ namespace MonitorControl
 				lblCurrentHttp.Invoke((Action)SetCurrentHttpPorts);
 			else
 			{
-				lblCurrentHttp.Text = "Active Ports: " + Program.service.http_port + ", " + Program.service.https_port;
+				lblCurrentHttp.Text = "Active Ports: " + string.Join(",", Program.service.GetBindings().Select(b => b.Endpoint.Port));
 			}
 		}
 
@@ -199,12 +199,21 @@ namespace MonitorControl
 
 		private void btnOpenWebInterface_Click(object sender, EventArgs e)
 		{
-			if (Program.service.https_port > 0)
-				Process.Start("https://127.0.0.1" + (Program.service.https_port == 443 ? "" : (":" + Program.service.https_port)) + "/");
-			else if (Program.service.http_port > 0)
-				Process.Start("http://127.0.0.1" + (Program.service.http_port == 80 ? "" : (":" + Program.service.http_port)) + "/");
-			else
-				MessageBox.Show("The web server is not active. Please change the port number(s) above.");
+			BPUtil.SimpleHttp.HttpServer.Binding binding = Program.service.GetBindings().FirstOrDefault(b => b.AllowedConnectionTypes.HasFlag(BPUtil.SimpleHttp.AllowedConnectionTypes.https));
+			if (binding != null)
+			{
+				Process.Start("https://127.0.0.1" + (binding.Endpoint.Port == 443 ? "" : (":" + binding.Endpoint.Port)) + "/");
+				return;
+			}
+
+			binding = Program.service.GetBindings().FirstOrDefault(b => b.AllowedConnectionTypes.HasFlag(BPUtil.SimpleHttp.AllowedConnectionTypes.http));
+			if (binding != null)
+			{
+				Process.Start("https://127.0.0.1" + (binding.Endpoint.Port == 80 ? "" : (":" + binding.Endpoint.Port)) + "/");
+				return;
+			}
+
+			MessageBox.Show("The web server is not active. Please change the port number(s) above.");
 		}
 
 		private void btnExitProgram_Click(object sender, EventArgs e)
