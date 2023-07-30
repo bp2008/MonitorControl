@@ -45,6 +45,10 @@ namespace MonitorControl
 		/// Commands to run when turning on monitors (one command per line).
 		/// </summary>
 		public string commandsOn = "";
+		/// <summary>
+		/// List of hotkeys.
+		/// </summary>
+		public List<Hotkey> hotkeys = new List<Hotkey>();
 
 		/// <summary>
 		/// Returns the <see cref="ip_whitelist"/> string with line breaks converted to Windows format. The XML writer breaks them otherwise.

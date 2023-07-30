@@ -68,9 +68,21 @@ namespace MonitorControl
 			}
 			finally
 			{
-				SingleInstance.Stop();
-				service?.Stop();
-				context?.Dispose();
+				try
+				{
+					SingleInstance.Stop();
+				}
+				catch { }
+				try
+				{
+					service?.Stop();
+				}
+				catch { }
+				try
+				{
+					context?.Dispose();
+				}
+				catch { }
 			}
 		}
 

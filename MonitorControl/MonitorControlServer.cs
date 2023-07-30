@@ -38,8 +38,8 @@ namespace MonitorControl
 				return;
 			}
 			string successMessage = "<div>" + p.requestedPage + " command successful</div>";
-			List<KeyValuePair<string, string>> additionalHeaders = new List<KeyValuePair<string, string>>();
-			additionalHeaders.Add(new KeyValuePair<string, string>("Access-Control-Allow-Origin", "*"));
+			HttpHeaderCollection additionalHeaders = new HttpHeaderCollection();
+			additionalHeaders.Add("Access-Control-Allow-Origin", "*");
 			if (p.requestedPage == "on")
 			{
 				On(p);

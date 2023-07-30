@@ -5,7 +5,10 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using BPUtil;
+using BPUtil.NativeWin;
+using BPUtil.NativeWin.AudioController;
 using BPUtil.SimpleHttp;
 
 namespace MonitorControl
@@ -16,7 +19,7 @@ namespace MonitorControl
 		{
 			CertificateValidation.RegisterCallback(CertificateValidation.DoNotValidate_ValidationCallback);
 		}
-
+		public static KeyboardHook keyboardHook { get; private set; }
 		MonitorControlServer httpServer;
 		/// <summary>
 		/// An event which is raised when the http server binds a socket, indicating that a listening port number may have changed.
@@ -39,6 +42,7 @@ namespace MonitorControl
 		public void Start()
 		{
 			Stop();
+
 			Logger.StartLoggingThreads();
 
 			httpServer = new MonitorControlServer();
@@ -49,6 +53,10 @@ namespace MonitorControl
 			thrSyncWithOtherServer.IsBackground = true;
 			thrSyncWithOtherServer.Name = "Sync with other server";
 			thrSyncWithOtherServer.Start();
+
+			keyboardHook = new KeyboardHook();
+			keyboardHook.Error += KeyboardHook_Error;
+			keyboardHook.KeyPressedAsync += KeyboardHook_KeyPressedAsync;
 		}
 
 		/// <summary>
@@ -56,6 +64,21 @@ namespace MonitorControl
 		/// </summary>
 		public void Stop()
 		{
+			try
+			{
+				if (keyboardHook != null)
+				{
+					keyboardHook.KeyPressedAsync -= KeyboardHook_KeyPressedAsync;
+					keyboardHook.Error -= KeyboardHook_Error;
+				}
+			}
+			catch { }
+			try
+			{
+				keyboardHook?.Dispose();
+			}
+			catch { }
+			keyboardHook = null;
 			httpServer?.Stop();
 			httpServer = null;
 			thrSyncWithOtherServer?.Abort();
@@ -182,6 +205,50 @@ namespace MonitorControl
 				syncedServerStatus = "Remote server sync has experienced a fatal error and will not resume operation until MonitorControl is restarted. " + ex.ToString();
 				Logger.Debug(ex);
 			}
+		}
+		/// <summary>
+		/// Set = true while the hotkey editor dialog is open to prevent hotkeys from taking effect.
+		/// </summary>
+		public static bool hotkeyEditorOpen = false;
+		private void KeyboardHook_KeyPressedAsync(object sender, AsyncKeyPressEventArgs e)
+		{
+			if (hotkeyEditorOpen)
+				return;
+			string hotkeyStr = e.ToString();
+			foreach (Hotkey hotkey in Program.settings.hotkeys)
+			{
+				if (hotkey.Text == hotkeyStr)
+				{
+					if (hotkey.Action == ActionType.MonitorsOff)
+					{
+						SetTimeout.OnBackground(() =>
+						{
+							MonitorControlServer.OffIfIdle(900, false);
+						}, 1500);
+					}
+					else if (hotkey.Action == ActionType.MonitorsOffAndMute)
+					{
+						SetTimeout.OnBackground(() =>
+						{
+							MonitorControlServer.OffIfIdle(900, true);
+						}, 1500);
+					}
+					else if (hotkey.Action == ActionType.Mute)
+					{
+						AudioManager.SetMasterVolumeMute(true);
+					}
+					else if (hotkey.Action == ActionType.Unmute)
+					{
+						AudioManager.SetMasterVolumeMute(false);
+					}
+					break;
+				}
+			}
+		}
+
+		private void KeyboardHook_Error(object sender, Exception e)
+		{
+			MessageBox.Show("MonitorControlService had a Hotkey Error: " + e);
 		}
 	}
 }

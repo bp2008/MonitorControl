@@ -1,4 +1,5 @@
 ﻿using BPUtil;
+using BPUtil.NativeWin;
 using Microsoft.Win32;
 using Microsoft.Win32.TaskScheduler;
 using System;
@@ -302,6 +303,12 @@ namespace MonitorControl
 		private void btnOK_Click(object sender, EventArgs e)
 		{
 			this.Close();
+		}
+
+		private void btnManageHotkeys_Click(object sender, EventArgs e)
+		{
+			HotkeyForm hkForm = new HotkeyForm();
+			hkForm.ShowDialog();
 		}
 	}
 }

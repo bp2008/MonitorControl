@@ -65,6 +65,7 @@
 			this.cbStartAutomatically = new System.Windows.Forms.CheckBox();
 			this.btnOK = new System.Windows.Forms.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
+			this.btnManageHotkeys = new System.Windows.Forms.Button();
 			((System.ComponentModel.ISupportInitialize)(this.nudHttpPort)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudHttpsPort)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudIdleMs)).BeginInit();
@@ -509,11 +510,23 @@
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Sync with another MonitorControl server";
 			// 
+			// btnManageHotkeys
+			// 
+			this.btnManageHotkeys.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.btnManageHotkeys.Location = new System.Drawing.Point(167, 401);
+			this.btnManageHotkeys.Name = "btnManageHotkeys";
+			this.btnManageHotkeys.Size = new System.Drawing.Size(146, 23);
+			this.btnManageHotkeys.TabIndex = 32;
+			this.btnManageHotkeys.Text = "Manage Hotkeys";
+			this.btnManageHotkeys.UseVisualStyleBackColor = true;
+			this.btnManageHotkeys.Click += new System.EventHandler(this.btnManageHotkeys_Click);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(706, 465);
+			this.Controls.Add(this.btnManageHotkeys);
 			this.Controls.Add(this.label13);
 			this.Controls.Add(this.label12);
 			this.Controls.Add(this.label11);
@@ -595,6 +608,7 @@
 		private System.Windows.Forms.Label label12;
 		private System.Windows.Forms.Label label13;
 		private System.Windows.Forms.TextBox txtCommandsOffAfterDelay;
+		private System.Windows.Forms.Button btnManageHotkeys;
 	}
 }
 
