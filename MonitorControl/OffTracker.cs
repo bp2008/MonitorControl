@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace MonitorControl
 {
 	/// <summary>
-	/// Tracks the monitor state in such a way that "partial wakes" are ignored if they never change into full wakes.  This class helps determine when it is time to run delayed "off" commands.
+	/// Tracks the monitor state such that we can query to find out how long monitors have been off.  This class helps determine when it is time to run delayed "off" commands.
 	/// </summary>
 	public static class OffTracker
 	{

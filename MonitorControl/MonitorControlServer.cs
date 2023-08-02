@@ -467,6 +467,7 @@ namespace MonitorControl
 				currentMonitorStatus = "on";
 				RunAdditionalCommandsInBackground(CommandSet.On);
 				UnmuteIfNeeded();
+				OffTracker.NotifyMonitorOn();
 
 				if (doPartialWakeLogic)
 				{
@@ -500,7 +501,6 @@ namespace MonitorControl
 			if (totalInputs >= inputsRequired)
 			{
 				// Input requirements met.  Full Wake.
-				OffTracker.NotifyMonitorOn();
 				if (pwn != null)
 					pwn.Terminate();
 			}
