@@ -46,7 +46,7 @@ namespace MonitorControl
 				}
 				else if (p.Request.Page == "off")
 				{
-					double partialwake = p.Request.GetDoubleParam("partialwake", 0);
+					double partialwake = p.Request.GetDoubleParam("partialwake", 0).Clamp(0, 1);
 					int idleTimeMs = p.Request.GetIntParam("ifidle", 0);
 					int delayMs = p.Request.GetIntParam("delay", 0);
 					bool mute = p.Request.GetBoolParam("mute");
@@ -232,8 +232,8 @@ namespace MonitorControl
 						+ BuildRow("on?offAfterSecs=15", "turn displays on, then after 15 seconds, off")
 						+ BuildRow("cancel", "cancel a scheduled monitor off command (see above)")
 						+ BuildRow("off", "turn displays off")
-						+ BuildRow("off?partialwake=1", "immediately shows the partial wake dialog which will turn displays off if insufficient input is received")
-						+ BuildRow("off?partialwake=1&mute=1", "immediately shows the partial wake dialog which will turn displays off if insufficient input is received. If displays are turned off, this command also mutes computer audio until the computer is no longer idle.")
+						+ BuildRow("off?partialwake=0.5", "immediately shows the partial wake dialog at 50% progress which will turn displays off if insufficient input is received")
+						+ BuildRow("off?partialwake=0.5&mute=1", "immediately shows the partial wake dialog at 50% progress which will turn displays off if insufficient input is received. If displays are turned off, this command also mutes computer audio until the computer is no longer idle.")
 						+ BuildRow("off?ifidle=3000", "turn displays off if idle for 3000ms")
 						+ BuildRow("off?delay=3000&ifidle=2900", "wait 3000ms, then turn displays off if idle for 2900ms")
 						+ BuildRow("off?delay=3000&ifidle=2900&mute=1", "wait 3000ms, then turn displays off if idle for 2900ms, and also mute until the computer is no longer idle")

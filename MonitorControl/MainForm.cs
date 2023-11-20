@@ -82,7 +82,7 @@ namespace MonitorControl
 			if (old != Program.settings.http_port)
 			{
 				Program.settings.Save();
-				Program.service.Start();
+				Program.service.BindHttpServerSockets();
 				SetTimeout.OnGui(SetCurrentHttpPorts, 100, this);
 			}
 		}
@@ -94,7 +94,7 @@ namespace MonitorControl
 			if (old != Program.settings.https_port)
 			{
 				Program.settings.Save();
-				Program.service.Start();
+				Program.service.BindHttpServerSockets();
 				SetTimeout.OnGui(SetCurrentHttpPorts, 100, this);
 			}
 		}

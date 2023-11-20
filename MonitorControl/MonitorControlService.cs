@@ -47,7 +47,7 @@ namespace MonitorControl
 
 			httpServer = new MonitorControlServer();
 			httpServer.SocketBound += HttpServer_SocketBound;
-			httpServer.SetBindings(Program.settings.http_port, Program.settings.https_port);
+			BindHttpServerSockets();
 
 			thrSyncWithOtherServer = new Thread(SyncWithOtherServer);
 			thrSyncWithOtherServer.IsBackground = true;
@@ -57,6 +57,14 @@ namespace MonitorControl
 			keyboardHook = new KeyboardHook();
 			keyboardHook.Error += KeyboardHook_Error;
 			keyboardHook.KeyPressedAsync += KeyboardHook_KeyPressedAsync;
+		}
+
+		/// <summary>
+		/// (Re)binds the HTTP server sockets according to program settings.
+		/// </summary>
+		public void BindHttpServerSockets()
+		{
+			httpServer?.SetBindings(Program.settings.http_port, Program.settings.https_port);
 		}
 
 		/// <summary>

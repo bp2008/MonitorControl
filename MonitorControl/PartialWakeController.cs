@@ -34,7 +34,7 @@ namespace MonitorControl
 				abort = false;
 
 				Mute = mute;
-				Wakefulness = wakefulness;
+				Wakefulness = wakefulness.Clamp(0, 1);
 
 				partialWakeThread = new Thread(PartialWakeThreadLoop);
 				partialWakeThread.IsBackground = true;
