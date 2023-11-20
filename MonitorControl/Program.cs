@@ -39,8 +39,6 @@ namespace MonitorControl
 
 				settings = new Settings();
 				settings.Load();
-				if (settings.inputsRequiredToWake < 1)
-					settings.inputsRequiredToWake = settings.preventAccidentalWakeup ? 8 : 1;
 				settings.SaveIfNoExist();
 
 				Application.EnableVisualStyles();

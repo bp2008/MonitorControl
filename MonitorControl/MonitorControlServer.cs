@@ -46,15 +46,15 @@ namespace MonitorControl
 				}
 				else if (p.Request.Page == "off")
 				{
-					bool partialwake = p.Request.GetBoolParam("partialwake");
+					double partialwake = p.Request.GetDoubleParam("partialwake", 0);
 					int idleTimeMs = p.Request.GetIntParam("ifidle", 0);
 					int delayMs = p.Request.GetIntParam("delay", 0);
 					bool mute = p.Request.GetBoolParam("mute");
 					Action setOff = () =>
 					{
-						if (partialwake)
+						if (partialwake > 0)
 						{
-							PartialWakeController.BeginPartialWakeState(mute, 4000, 8);
+							PartialWakeController.BeginPartialWakeState(mute, partialwake);
 						}
 						else
 						{
@@ -460,7 +460,7 @@ namespace MonitorControl
 						SetMonitorInState(2);
 					}
 				}
-				bool doPartialWakeLogic = Program.settings.inputsRequiredToWake > 1 && currentMonitorStatus == "off";
+				bool doPartialWakeLogic = Program.settings.inputWakefulnessStrength > 1 && currentMonitorStatus == "off";
 				bool lastOffDidMute = didMute;
 
 				currentMonitorStatus = "on";
@@ -472,7 +472,7 @@ namespace MonitorControl
 				{
 					// Shows the partial wake dialog which begins a countdown.
 					// If the user provides sufficient input before the countdown expires, the screens stay awake.  Otherwise, the screens are turned off.
-					PartialWakeController.BeginPartialWakeState(lastOffDidMute, 10000, BPMath.Clamp(Program.settings.inputsRequiredToWake, 1, 50));
+					PartialWakeController.BeginPartialWakeState(lastOffDidMute, 0.5);
 				}
 			}
 			catch (ThreadAbortException)

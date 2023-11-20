@@ -36,7 +36,7 @@ namespace MonitorControl
 			nudHttpPort.Value = Program.settings.http_port;
 			nudHttpsPort.Value = Program.settings.https_port;
 			nudIdleMs.Value = Program.settings.idleTimeMs;
-			nudInputsRequiredToWake.Value = Program.settings.inputsRequiredToWake;
+			nudInputWakefulnessStrength.Value = Program.settings.inputWakefulnessStrength;
 			txtIpWhitelist.Text = Program.settings.GetIpWhitelistString();
 			txtSyncAddress.Text = Program.settings.syncAddress;
 			nudSyncPort.Value = Program.settings.syncPort;
@@ -164,9 +164,9 @@ namespace MonitorControl
 
 		private void nudInputsRequiredToWake_ValueChanged(object sender, EventArgs e)
 		{
-			int old = Program.settings.inputsRequiredToWake;
-			Program.settings.inputsRequiredToWake = (int)nudInputsRequiredToWake.Value;
-			if (old != Program.settings.inputsRequiredToWake)
+			int old = Program.settings.inputWakefulnessStrength;
+			Program.settings.inputWakefulnessStrength = (int)nudInputWakefulnessStrength.Value;
+			if (old != Program.settings.inputWakefulnessStrength)
 				Program.settings.Save();
 		}
 

@@ -14,10 +14,9 @@ namespace MonitorControl
 		public string ip_whitelist = "127.0.0.1";
 		public string syncAddress = "";
 		/// <summary>
-		/// If enabled, multiple inputs will be required to keep the monitors awake after they've been turned off by this app.
+		/// [0-10] 0 to disable, 1 is minimum strength, 10 is maximum strength.  At lower strength, more inputs are required to perform a full wake.
 		/// </summary>
-		public bool preventAccidentalWakeup = false;
-		public int inputsRequiredToWake = 0;
+		public int inputWakefulnessStrength = 3;
 		public int syncPort = 8001;
 		/// <summary>
 		/// (0: No action) …  (1: Turn Off) … (2: Turn On)

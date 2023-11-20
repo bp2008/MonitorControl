@@ -51,9 +51,8 @@
 			this.label6 = new System.Windows.Forms.Label();
 			this.cbSyncMuteWhenOff = new System.Windows.Forms.CheckBox();
 			this.cbAllowLocalOverride = new System.Windows.Forms.CheckBox();
-			this.nudInputsRequiredToWake = new System.Windows.Forms.NumericUpDown();
+			this.nudInputWakefulnessStrength = new System.Windows.Forms.NumericUpDown();
 			this.label9 = new System.Windows.Forms.Label();
-			this.label10 = new System.Windows.Forms.Label();
 			this.txtCommandsOn = new System.Windows.Forms.TextBox();
 			this.txtCommandsOff = new System.Windows.Forms.TextBox();
 			this.label11 = new System.Windows.Forms.Label();
@@ -70,7 +69,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.nudHttpsPort)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudIdleMs)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudSyncPort)).BeginInit();
-			((System.ComponentModel.ISupportInitialize)(this.nudInputsRequiredToWake)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.nudInputWakefulnessStrength)).BeginInit();
 			this.groupBox1.SuspendLayout();
 			this.SuspendLayout();
 			// 
@@ -344,49 +343,34 @@
 			this.cbAllowLocalOverride.UseVisualStyleBackColor = true;
 			this.cbAllowLocalOverride.CheckedChanged += new System.EventHandler(this.cbAllowLocalOverride_CheckedChanged);
 			// 
-			// nudInputsRequiredToWake
+			// nudInputWakefulnessStrength
 			// 
-			this.nudInputsRequiredToWake.Location = new System.Drawing.Point(146, 102);
-			this.nudInputsRequiredToWake.Maximum = new decimal(new int[] {
-            50,
+			this.nudInputWakefulnessStrength.Location = new System.Drawing.Point(162, 102);
+			this.nudInputWakefulnessStrength.Maximum = new decimal(new int[] {
+            10,
             0,
             0,
             0});
-			this.nudInputsRequiredToWake.Minimum = new decimal(new int[] {
-            1,
+			this.nudInputWakefulnessStrength.Name = "nudInputWakefulnessStrength";
+			this.nudInputWakefulnessStrength.Size = new System.Drawing.Size(50, 20);
+			this.nudInputWakefulnessStrength.TabIndex = 8;
+			this.toolTip1.SetToolTip(this.nudInputWakefulnessStrength, resources.GetString("nudInputWakefulnessStrength.ToolTip"));
+			this.nudInputWakefulnessStrength.Value = new decimal(new int[] {
+            3,
             0,
             0,
             0});
-			this.nudInputsRequiredToWake.Name = "nudInputsRequiredToWake";
-			this.nudInputsRequiredToWake.Size = new System.Drawing.Size(50, 20);
-			this.nudInputsRequiredToWake.TabIndex = 8;
-			this.toolTip1.SetToolTip(this.nudInputsRequiredToWake, resources.GetString("nudInputsRequiredToWake.ToolTip"));
-			this.nudInputsRequiredToWake.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-			this.nudInputsRequiredToWake.ValueChanged += new System.EventHandler(this.nudInputsRequiredToWake_ValueChanged);
+			this.nudInputWakefulnessStrength.ValueChanged += new System.EventHandler(this.nudInputsRequiredToWake_ValueChanged);
 			// 
 			// label9
 			// 
 			this.label9.AutoSize = true;
 			this.label9.Location = new System.Drawing.Point(19, 104);
 			this.label9.Name = "label9";
-			this.label9.Size = new System.Drawing.Size(121, 13);
+			this.label9.Size = new System.Drawing.Size(137, 13);
 			this.label9.TabIndex = 61;
-			this.label9.Text = "Inputs required to wake:";
+			this.label9.Text = "Input wakefulness strength:";
 			this.toolTip1.SetToolTip(this.label9, resources.GetString("label9.ToolTip"));
-			// 
-			// label10
-			// 
-			this.label10.AutoSize = true;
-			this.label10.Location = new System.Drawing.Point(202, 104);
-			this.label10.Name = "label10";
-			this.label10.Size = new System.Drawing.Size(121, 13);
-			this.label10.TabIndex = 62;
-			this.label10.Text = "(during 10-second span)";
-			this.toolTip1.SetToolTip(this.label10, resources.GetString("label10.ToolTip"));
 			// 
 			// txtCommandsOn
 			// 
@@ -532,9 +516,8 @@
 			this.Controls.Add(this.label11);
 			this.Controls.Add(this.txtCommandsOff);
 			this.Controls.Add(this.txtCommandsOn);
-			this.Controls.Add(this.label10);
 			this.Controls.Add(this.label9);
-			this.Controls.Add(this.nudInputsRequiredToWake);
+			this.Controls.Add(this.nudInputWakefulnessStrength);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.btnOK);
 			this.Controls.Add(this.cbStartAutomatically);
@@ -563,7 +546,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.nudHttpsPort)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudIdleMs)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudSyncPort)).EndInit();
-			((System.ComponentModel.ISupportInitialize)(this.nudInputsRequiredToWake)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.nudInputWakefulnessStrength)).EndInit();
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox1.PerformLayout();
 			this.ResumeLayout(false);
@@ -599,9 +582,8 @@
 		private System.Windows.Forms.CheckBox cbSyncHTTPS;
 		private System.Windows.Forms.CheckBox cbSyncMuteWhenOff;
 		private System.Windows.Forms.CheckBox cbAllowLocalOverride;
-		private System.Windows.Forms.NumericUpDown nudInputsRequiredToWake;
+		private System.Windows.Forms.NumericUpDown nudInputWakefulnessStrength;
 		private System.Windows.Forms.Label label9;
-		private System.Windows.Forms.Label label10;
 		private System.Windows.Forms.TextBox txtCommandsOn;
 		private System.Windows.Forms.TextBox txtCommandsOff;
 		private System.Windows.Forms.Label label11;
