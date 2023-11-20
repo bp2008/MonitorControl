@@ -32,236 +32,235 @@ namespace MonitorControl
 
 		public override void handleGETRequest(HttpProcessor p)
 		{
-			if (!Program.settings.IpIsWhitelisted(p.RemoteIPAddressStr))
+			try
 			{
-				p.writeFailure("403 Forbidden");
-				return;
-			}
-			string successMessage = "<div>" + p.requestedPage + " command successful</div>";
-			HttpHeaderCollection additionalHeaders = new HttpHeaderCollection();
-			additionalHeaders.Add("Access-Control-Allow-Origin", "*");
-			if (p.requestedPage == "on")
-			{
-				On(p);
-			}
-			else if (p.requestedPage == "off")
-			{
-				int idleTimeMs = p.GetIntParam("ifidle", 0);
-				int delayMs = p.GetIntParam("delay", 0);
-				Action setOff = () =>
+				if (!Program.settings.IpIsWhitelisted(p.RemoteIPAddressStr))
 				{
-					if (idleTimeMs <= 0 || LastInput.GetLastInputAgeMs() >= idleTimeMs)
-					{
-						Off(p.GetBoolParam("mute"));
-					}
-				};
-				if (delayMs > 0)
-				{
-					SetTimeout.OnBackground(setOff, delayMs);
+					p.Response.Simple("403 Forbidden");
+					return;
 				}
-				else
-					setOff();
-			}
-			else if (p.requestedPage == "off_if_idle")
-			{
-				OffIfIdle(Program.settings.idleTimeMs, p.GetBoolParam("mute"));
-			}
-			else if (p.requestedPage == "standby")
-			{
-				OffTracker.NotifyMonitorOff();
-				currentMonitorStatus = "off";
-				SetMonitorInState(1);
-				RunAdditionalCommandsInBackground(CommandSet.Off);
-			}
-			else if (p.requestedPage == "status")
-			{
-				p.writeSuccess("text/plain", additionalHeaders: additionalHeaders);
-				p.outputStream.Write(currentMonitorStatus);
-				return;
-			}
-			else if (p.requestedPage == "idle")
-			{
-				p.writeSuccess("text/plain", additionalHeaders: additionalHeaders);
-				p.outputStream.Write(LastInput.GetLastInputAgeMs());
-				return;
-			}
-			else if (p.requestedPage == "smarttoggle")
-			{
-				if (currentMonitorStatus == "on")
-				{
-					OffIfIdle(Program.settings.idleTimeMs, p.GetBoolParam("mute"));
-				}
-				else
+				string successMessage = "<div>" + p.Request.Page + " command successful</div>";
+				if (p.Request.Page == "on")
 				{
 					On(p);
 				}
-			}
-			else if (p.requestedPage == "cancel")
-			{
-				StopMonitorOffThread();
-			}
-			else if (p.requestedPage == "getvolume")
-			{
-				int level = 0;
-				try
+				else if (p.Request.Page == "off")
 				{
-					level = (int)Math.Round(AudioManager.GetMasterVolume());
-					//level = Audio.GetVolume();
+					bool partialwake = p.Request.GetBoolParam("partialwake");
+					int idleTimeMs = p.Request.GetIntParam("ifidle", 0);
+					int delayMs = p.Request.GetIntParam("delay", 0);
+					bool mute = p.Request.GetBoolParam("mute");
+					Action setOff = () =>
+					{
+						if (partialwake)
+						{
+							PartialWakeController.BeginPartialWakeState(mute, 4000, 8);
+						}
+						else
+						{
+							if (idleTimeMs <= 0 || LastInput.GetLastInputAgeMs() >= idleTimeMs)
+							{
+								Off(mute);
+							}
+						}
+					};
+					if (delayMs > 0)
+					{
+						SetTimeout.OnBackground(setOff, delayMs);
+					}
+					else
+						setOff();
 				}
-				catch (Exception ex)
+				else if (p.Request.Page == "off_if_idle")
 				{
-					p.writeSuccess("text/plain; charset=utf-8", responseCode: "500 Internal Server Error");
-					p.outputStream.Write(ex.ToString());
+					OffIfIdle(Program.settings.idleTimeMs, p.Request.GetBoolParam("mute"));
+				}
+				else if (p.Request.Page == "standby")
+				{
+					OffTracker.NotifyMonitorOff();
+					currentMonitorStatus = "off";
+					SetMonitorInState(1);
+					RunAdditionalCommandsInBackground(CommandSet.Off);
+				}
+				else if (p.Request.Page == "status")
+				{
+					p.Response.FullResponseUTF8(currentMonitorStatus, "text/plain; charset=utf-8");
 					return;
 				}
-				p.writeSuccess("text/plain");
-				p.outputStream.Write(level);
-			}
-			else if (p.requestedPage == "setvolume")
-			{
-				int level = p.GetIntParam("level");
-				level = level.Clamp(0, 100);
-				try
+				else if (p.Request.Page == "idle")
 				{
-					AudioManager.SetMasterVolume(level);
-					//Audio.SetVolume(level);
-				}
-				catch (Exception ex)
-				{
-					p.writeSuccess("text/plain; charset=utf-8", responseCode: "500 Internal Server Error");
-					p.outputStream.Write(ex.ToString());
+					p.Response.FullResponseUTF8(LastInput.GetLastInputAgeMs().ToString(), "text/plain; charset=utf-8");
 					return;
 				}
-				p.writeSuccess("text/plain");
-				p.outputStream.Write(level);
-			}
-			else if (p.requestedPage == "mute")
-			{
-				try
+				else if (p.Request.Page == "smarttoggle")
 				{
-					AudioManager.SetMasterVolumeMute(true);
-					//Audio.SetMute(true);
+					if (currentMonitorStatus == "on")
+					{
+						OffIfIdle(Program.settings.idleTimeMs, p.Request.GetBoolParam("mute"));
+					}
+					else
+					{
+						On(p);
+					}
 				}
-				catch (Exception ex)
+				else if (p.Request.Page == "cancel")
 				{
-					p.writeSuccess("text/plain; charset=utf-8", responseCode: "500 Internal Server Error");
-					p.outputStream.Write(ex.ToString());
-					return;
+					StopMonitorOffThread();
 				}
-				p.writeSuccess("text/plain");
-				p.outputStream.Write("muted");
-			}
-			else if (p.requestedPage == "unmute")
-			{
-				try
+				else if (p.Request.Page == "getvolume")
 				{
-					AudioManager.SetMasterVolumeMute(false);
-					//Audio.SetMute(false);
+					int level = 0;
+					try
+					{
+						level = (int)Math.Round(AudioManager.GetMasterVolume());
+						//level = Audio.GetVolume();
+					}
+					catch (Exception ex)
+					{
+						p.Response.Simple("500 Internal Server Error", ex.ToString());
+						return;
+					}
+					p.Response.FullResponseUTF8(level.ToString(), "text/plain; charset=utf-8");
 				}
-				catch (Exception ex)
+				else if (p.Request.Page == "setvolume")
 				{
-					p.writeSuccess("text/plain; charset=utf-8", responseCode: "500 Internal Server Error");
-					p.outputStream.Write(ex.ToString());
-					return;
+					int level = p.Request.GetIntParam("level");
+					level = level.Clamp(0, 100);
+					try
+					{
+						AudioManager.SetMasterVolume(level);
+						//Audio.SetVolume(level);
+					}
+					catch (Exception ex)
+					{
+						p.Response.Simple("500 Internal Server Error", ex.ToString());
+						return;
+					}
+					p.Response.FullResponseUTF8(level.ToString(), "text/plain; charset=utf-8");
 				}
-				p.writeSuccess("text/plain");
-				p.outputStream.Write("unmuted");
-			}
-			else if (p.requestedPage == "getmute")
-			{
-				bool muted = false;
-				try
+				else if (p.Request.Page == "mute")
 				{
-					muted = AudioManager.GetMasterVolumeMute();
-					//muted = Audio.GetMute();
+					try
+					{
+						AudioManager.SetMasterVolumeMute(true);
+						//Audio.SetMute(true);
+					}
+					catch (Exception ex)
+					{
+						p.Response.Simple("500 Internal Server Error", ex.ToString());
+						return;
+					}
+					p.Response.FullResponseUTF8("muted", "text/plain; charset=utf-8");
 				}
-				catch (Exception ex)
+				else if (p.Request.Page == "unmute")
 				{
-					p.writeSuccess("text/plain; charset=utf-8", responseCode: "500 Internal Server Error");
-					p.outputStream.Write(ex.ToString());
-					return;
+					try
+					{
+						AudioManager.SetMasterVolumeMute(false);
+						//Audio.SetMute(false);
+					}
+					catch (Exception ex)
+					{
+						p.Response.Simple("500 Internal Server Error", ex.ToString());
+						return;
+					}
+					p.Response.FullResponseUTF8("unmuted", "text/plain; charset=utf-8");
 				}
-				p.writeSuccess("text/plain");
-				p.outputStream.Write(muted ? "muted" : "unmuted");
-			}
-			else if (p.requestedPage == "mousemove")
-			{
-				int dx = p.GetIntParam("dx"); // x change
-				int dy = p.GetIntParam("dy"); // y change
-				int delay = p.GetIntParam("delay").Clamp(1, 200); // Approximate milliseconds between movements.
-				int times = p.GetIntParam("times").Clamp(1, 5000 / delay); // Number of times to perform the change.  Limited to about 5 seconds of movement.
-				try
+				else if (p.Request.Page == "getmute")
 				{
-					DragMouse(dx, dy, delay, times);
+					bool muted = false;
+					try
+					{
+						muted = AudioManager.GetMasterVolumeMute();
+						//muted = Audio.GetMute();
+					}
+					catch (Exception ex)
+					{
+						p.Response.Simple("500 Internal Server Error", ex.ToString());
+						return;
+					}
+					p.Response.FullResponseUTF8(muted ? "muted" : "unmuted", "text/plain; charset=utf-8");
 				}
-				catch (Exception ex)
+				else if (p.Request.Page == "mousemove")
 				{
-					p.writeSuccess("text/plain; charset=utf-8", responseCode: "500 Internal Server Error");
-					p.outputStream.Write(ex.ToString());
-					return;
+					int dx = p.Request.GetIntParam("dx"); // x change
+					int dy = p.Request.GetIntParam("dy"); // y change
+					int delay = p.Request.GetIntParam("delay").Clamp(1, 200); // Approximate milliseconds between movements.
+					int times = p.Request.GetIntParam("times").Clamp(1, 5000 / delay); // Number of times to perform the change.  Limited to about 5 seconds of movement.
+					try
+					{
+						DragMouse(dx, dy, delay, times);
+					}
+					catch (Exception ex)
+					{
+						p.Response.Simple("500 Internal Server Error", ex.ToString());
+						return;
+					}
+					p.Response.FullResponseUTF8("move complete. moved " + dx + "," + dy + " " + times + " times with " + delay + " ms delay", "text/plain; charset=utf-8");
 				}
-				p.writeSuccess("text/plain; charset=utf-8");
-				p.outputStream.Write("move complete. moved " + dx + "," + dy + " " + times + " times with " + delay + " ms delay");
-			}
-			else if (p.requestedPage == "AllowLocalOverride")
-			{
-				Program.settings.syncAllowLocalOverride = true;
-				Program.settings.Save();
-				p.writeSuccess("text/plain; charset=utf-8");
-				p.outputStream.Write("✅ Allow local input to override synced state");
-			}
-			else if (p.requestedPage == "DisallowLocalOverride")
-			{
-				Program.settings.syncAllowLocalOverride = false;
-				Program.settings.Save();
-				p.writeSuccess("text/plain; charset=utf-8");
-				p.outputStream.Write("❌ Allow local input to override synced state");
-			}
-			else
-				successMessage = "";
+				else if (p.Request.Page == "AllowLocalOverride")
+				{
+					Program.settings.syncAllowLocalOverride = true;
+					Program.settings.Save();
+					p.Response.FullResponseUTF8("✅ Allow local input to override synced state", "text/plain; charset=utf-8");
+				}
+				else if (p.Request.Page == "DisallowLocalOverride")
+				{
+					Program.settings.syncAllowLocalOverride = false;
+					Program.settings.Save();
+					p.Response.FullResponseUTF8("❌ Allow local input to override synced state", "text/plain; charset=utf-8");
+				}
+				else
+					successMessage = "";
 
-			if (p.responseWritten)
-				return;
-
-			p.writeSuccess(additionalHeaders: additionalHeaders);
-			p.outputStream.Write("<html><head><title>Monitor Control Service</title></head>"
-				+ "<style type=\"text/css\">"
-				+ " table { border-collapse: collapse; }"
-				+ " th, td { border: 1px solid black; padding: 3px 5px; }"
-				+ "</style>"
-				+ "<body>"
-				+ "<p class=\"result\">" + successMessage + "</p>"
-				+ "<p class=\"syncStatus\">(Remote server \"" + Program.settings.syncAddress + "\") " + HttpUtility.HtmlEncode(MonitorControlService.syncedServerStatus) + "</p>"
-				+ "<table>"
-				//+ "<thead>"
-				//+ "<tr><th></th><th></th></tr>"
-				//+ "</thead>"
-				+ "<tbody>"
-				+ BuildRow("on", "turn displays on")
-				+ BuildRow("on?offAfterSecs=15", "turn displays on, then after 15 seconds, off")
-				+ BuildRow("cancel", "cancel a scheduled monitor off command (see above)")
-				+ BuildRow("off", "turn displays off")
-				+ BuildRow("off?ifidle=3000", "turn displays off if idle for 3000ms")
-				+ BuildRow("off?delay=3000&ifidle=2900", "wait 3000ms, then turn displays off if idle for 2900ms")
-				+ BuildRow("off?delay=3000&ifidle=2900&mute=1", "wait 3000ms, then turn displays off if idle for 2900ms, and also mute until the computer is no longer idle")
-				+ BuildRow("off_if_idle", "turn displays off if idle for the configured idle time (" + Program.settings.idleTimeMs + " ms)")
-				+ BuildRow("off_if_idle?mute=1", "turn displays off if idle for the configured idle time (" + Program.settings.idleTimeMs + " ms). Also mute until the computer is no longer idle.")
-				+ BuildRow("standby", "change displays to standby state -- probably does nothing")
-				+ BuildRow("status", "return the current status (\"on\" or \"off\")")
-				+ BuildRow("idle", "return the time in milliseconds since the last user input")
-				+ BuildRow("smarttoggle", "if status is \"on\" then <b>off_if_idle</b>, else <b>on</b>. Also supports the <b>mute</b> boolean argument.")
-				+ BuildRow("getvolume", "returns default audio device volume from 0 to 100")
-				+ BuildRow("setvolume?level=10", "sets default audio device volume from 0 to 100")
-				+ BuildRow("mute", "mutes default audio device")
-				+ BuildRow("unmute", "unmutes default audio device")
-				+ BuildRow("getmute", "returns \"muted\" or \"unmuted\"")
-				+ BuildRow("mousemove?dx=2&dy=-2&delay=4&times=5", "moves the mouse cursor up 2px and to the right 2px, 5 times, waiting 4ms between each movement. Max delay 200ms. Max 5 seconds movement per command.")
-				+ BuildRow("AllowLocalOverride", "Enables the setting \"Allow local input to override synced state\"")
-				+ BuildRow("DisallowLocalOverride", "Disables the setting \"Allow local input to override synced state\"")
-				+ "</tbody>"
-				+ "</table>"
-				+ "</body>"
-				+ "</html>");
+				if (p.Response.StatusString.StartsWith("404"))
+				{
+					p.Response.FullResponseUTF8("<html><head><title>Monitor Control Service</title></head>"
+						+ "<style type=\"text/css\">"
+						+ " table { border-collapse: collapse; }"
+						+ " th, td { border: 1px solid black; padding: 3px 5px; }"
+						+ "</style>"
+						+ "<body>"
+						+ "<p class=\"result\">" + successMessage + "</p>"
+						+ "<p class=\"syncStatus\">(Remote server \"" + Program.settings.syncAddress + "\") " + HttpUtility.HtmlEncode(MonitorControlService.syncedServerStatus) + "</p>"
+						+ "<table>"
+						//+ "<thead>"
+						//+ "<tr><th></th><th></th></tr>"
+						//+ "</thead>"
+						+ "<tbody>"
+						+ BuildRow("on", "turn displays on")
+						+ BuildRow("on?offAfterSecs=15", "turn displays on, then after 15 seconds, off")
+						+ BuildRow("cancel", "cancel a scheduled monitor off command (see above)")
+						+ BuildRow("off", "turn displays off")
+						+ BuildRow("off?partialwake=1", "immediately shows the partial wake dialog which will turn displays off if insufficient input is received")
+						+ BuildRow("off?partialwake=1&mute=1", "immediately shows the partial wake dialog which will turn displays off if insufficient input is received. If displays are turned off, this command also mutes computer audio until the computer is no longer idle.")
+						+ BuildRow("off?ifidle=3000", "turn displays off if idle for 3000ms")
+						+ BuildRow("off?delay=3000&ifidle=2900", "wait 3000ms, then turn displays off if idle for 2900ms")
+						+ BuildRow("off?delay=3000&ifidle=2900&mute=1", "wait 3000ms, then turn displays off if idle for 2900ms, and also mute until the computer is no longer idle")
+						+ BuildRow("off_if_idle", "turn displays off if idle for the configured idle time (" + Program.settings.idleTimeMs + " ms)")
+						+ BuildRow("off_if_idle?mute=1", "turn displays off if idle for the configured idle time (" + Program.settings.idleTimeMs + " ms). Also mute until the computer is no longer idle.")
+						+ BuildRow("standby", "change displays to standby state -- probably does nothing")
+						+ BuildRow("status", "return the current status (\"on\" or \"off\")")
+						+ BuildRow("idle", "return the time in milliseconds since the last user input")
+						+ BuildRow("smarttoggle", "if status is \"on\" then <b>off_if_idle</b>, else <b>on</b>. Also supports the <b>mute</b> boolean argument.")
+						+ BuildRow("getvolume", "returns default audio device volume from 0 to 100")
+						+ BuildRow("setvolume?level=10", "sets default audio device volume from 0 to 100")
+						+ BuildRow("mute", "mutes default audio device")
+						+ BuildRow("unmute", "unmutes default audio device")
+						+ BuildRow("getmute", "returns \"muted\" or \"unmuted\"")
+						+ BuildRow("mousemove?dx=2&dy=-2&delay=4&times=5", "moves the mouse cursor up 2px and to the right 2px, 5 times, waiting 4ms between each movement. Max delay 200ms. Max 5 seconds movement per command.")
+						+ BuildRow("AllowLocalOverride", "Enables the setting \"Allow local input to override synced state\"")
+						+ BuildRow("DisallowLocalOverride", "Disables the setting \"Allow local input to override synced state\"")
+						+ "</tbody>"
+						+ "</table>"
+						+ "</body>"
+						+ "</html>", "text/html; charset=utf-8");
+				}
+			}
+			finally
+			{
+				p.Response.Headers.Add("Access-Control-Allow-Origin", "*");
+			}
 		}
 
 		public static void DragMouse(int dx, int dy, int delay, int times)
@@ -297,7 +296,7 @@ namespace MonitorControl
 				StopWaitForWakeThread();
 				if (p != null)
 				{
-					int offAfterSecs = p.GetIntParam("offAfterSecs", 0);
+					int offAfterSecs = p.Request.GetIntParam("offAfterSecs", 0);
 					if (offAfterSecs > 0)
 					{
 						StartMonitorOffThread(offAfterSecs);
@@ -347,7 +346,7 @@ namespace MonitorControl
 			}
 		}
 
-		public override void handlePOSTRequest(HttpProcessor p, StreamReader inputData)
+		public override void handlePOSTRequest(HttpProcessor p)
 		{
 		}
 
@@ -471,7 +470,9 @@ namespace MonitorControl
 
 				if (doPartialWakeLogic)
 				{
-					PartialWakeLogic(lastOffDidMute);
+					// Shows the partial wake dialog which begins a countdown.
+					// If the user provides sufficient input before the countdown expires, the screens stay awake.  Otherwise, the screens are turned off.
+					PartialWakeController.BeginPartialWakeState(lastOffDidMute, 10000, BPMath.Clamp(Program.settings.inputsRequiredToWake, 1, 50));
 				}
 			}
 			catch (ThreadAbortException)
@@ -492,46 +493,6 @@ namespace MonitorControl
 			}
 		}
 
-		private static void PartialWakeLogic(bool mute, int totalInputs = 1, PartialWakeNotifier pwn = null, int iterations = 0)
-		{
-			double inputsRequired = BPMath.Clamp(Program.settings.inputsRequiredToWake, 1, 50);
-			const int maxIterations = 100;
-			const int iterationInterval = 100;
-
-			if (totalInputs >= inputsRequired)
-			{
-				// Input requirements met.  Full Wake.
-				if (pwn != null)
-					pwn.Terminate();
-			}
-			else if (iterations < maxIterations)
-			{
-				// Waiting for more inputs.
-				if (pwn == null)
-				{
-					pwn = new PartialWakeNotifier();
-					pwn.Progress = (int)((totalInputs / inputsRequired) * 100);
-					SetTimeout.OnBackground(() => { Application.Run(pwn); }, 0);
-				}
-				pwn.SetSecondsRemaining((int)(((maxIterations - iterations) * iterationInterval) / 1000.0));
-				SetTimeout.OnBackground(() =>
-				{
-					if (LastInput.GetLastInputAgeMs() < maxIterations)
-					{
-						totalInputs++;
-						pwn.Progress = (int)((totalInputs / inputsRequired) * 100);
-					}
-					PartialWakeLogic(mute, totalInputs, pwn, iterations + 1);
-				}, iterationInterval);
-			}
-			else
-			{
-				// Input requires not met.  Go back to sleep.
-				if (pwn != null)
-					pwn.Terminate();
-				Off(mute);
-			}
-		}
 		private static EventWaitHandle additionalCommandsLock = new EventWaitHandle(true, EventResetMode.AutoReset);
 		private static void RunAdditionalCommandsInBackground(CommandSet commandSet)
 		{

@@ -78,6 +78,7 @@
     <Compile Include="MonitorControlServer.cs" />
     <Compile Include="MonitorControlService.cs" />
     <Compile Include="OffTracker.cs" />
+    <Compile Include="PartialWakeController.cs" />
     <Compile Include="PartialWakeNotifier.cs">
       <SubType>Form</SubType>
     </Compile>
