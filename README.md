@@ -19,7 +19,7 @@ Closing the configuration window will not exit the program unless you click "Exi
 
 ## Prevent Accidental Wakeup
 
-When you use this program to turn off monitors, it can detect accidental wakeups due to spurious inputs (e.g. from a mouse getting bumped) and prevent these from keeping the screen alive.
+When you use this program to turn off monitors, it can detect accidental wakeups due to spurious inputs (e.g. from a mouse getting bumped) and prevent these from keeping the monitors on.
 
 The mechanism for this is simple:  When monitor wake is detected due to user input, a progress bar will appear at the center of all monitors.  When you press keyboard keys or move the mouse, the progress bar fills up, otherwise if there is no input the progress bar empties (taking about 10 seconds).  If the progress bar value reaches 0%, the monitors are turned back off.  If the progress bar reaches 100%, the monitors stay on.
 
