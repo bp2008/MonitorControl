@@ -98,7 +98,14 @@ namespace MonitorControl
 				// Close all partial wake dialogs
 				foreach (PartialWakeNotifier pwn in pwns)
 				{
-					pwn.Terminate();
+					try
+					{
+						pwn.Terminate();
+					}
+					catch (Exception ex)
+					{
+						Logger.Debug(ex);
+					}
 				}
 				partialWakeThread = null;
 			}

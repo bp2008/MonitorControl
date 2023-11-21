@@ -19,6 +19,9 @@ namespace MonitorControl
 		/// Local variable to hold the current progress so that it can be returned synchronously to any thread.
 		/// </summary>
 		int progress = 0;
+		object myTerminateLock = new object();
+		bool isLoaded = false;
+		bool terminate = false;
 		public PartialWakeNotifier()
 		{
 			InitializeComponent();
@@ -40,7 +43,7 @@ namespace MonitorControl
 		}
 
 		private void SetProgress(int p)
-		{ 
+		{
 			progress = p;
 			if (InvokeRequired)
 				Invoke((Action<int>)SetProgress, p);
@@ -56,7 +59,12 @@ namespace MonitorControl
 				Invoke((Action)Terminate);
 			else
 			{
-				this.Close();
+				lock (myTerminateLock)
+				{
+					terminate = true;
+					if (isLoaded)
+						this.Close();
+				}
 			}
 		}
 		public void SetSecondsRemaining(int seconds)
@@ -73,6 +81,15 @@ namespace MonitorControl
 			SetWindowOnTop();
 			resetTopTimeout = SetTimeout.OnGui(SetWindowOnTop, 1000, this);
 			resetTop2Timeout = SetTimeout.OnGui(SetWindowOnTop, 2000, this);
+			SetTimeout.OnGui(() =>
+			{
+				lock (myTerminateLock)
+				{
+					isLoaded = true;
+					if (terminate)
+						this.Close();
+				}
+			}, 1, this, ex => Logger.Debug(ex));
 		}
 		private void SetWindowOnTop()
 		{
