@@ -472,7 +472,7 @@ namespace MonitorControl
 				{
 					// Shows the partial wake dialog which begins a countdown.
 					// If the user provides sufficient input before the countdown expires, the screens stay awake.  Otherwise, the screens are turned off.
-					PartialWakeController.BeginPartialWakeState(lastOffDidMute, 0.5);
+					PartialWakeController.BeginPartialWakeState(lastOffDidMute, (double)Program.settings.partialWakeStart / (double)Program.settings.partialWakeMax);
 				}
 			}
 			catch (ThreadAbortException)

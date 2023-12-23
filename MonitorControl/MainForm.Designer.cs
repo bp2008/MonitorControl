@@ -59,24 +59,37 @@
 			this.label12 = new System.Windows.Forms.Label();
 			this.label13 = new System.Windows.Forms.Label();
 			this.txtCommandsOffAfterDelay = new System.Windows.Forms.TextBox();
+			this.label10 = new System.Windows.Forms.Label();
+			this.label14 = new System.Windows.Forms.Label();
+			this.label15 = new System.Windows.Forms.Label();
+			this.nudProgressBarLength = new System.Windows.Forms.NumericUpDown();
+			this.label16 = new System.Windows.Forms.Label();
+			this.label17 = new System.Windows.Forms.Label();
+			this.nudProgressBarStart = new System.Windows.Forms.NumericUpDown();
 			this.btnOpenDataFolder = new System.Windows.Forms.Button();
 			this.btnOpenWebInterface = new System.Windows.Forms.Button();
 			this.cbStartAutomatically = new System.Windows.Forms.CheckBox();
 			this.btnOK = new System.Windows.Forms.Button();
 			this.groupBox1 = new System.Windows.Forms.GroupBox();
 			this.btnManageHotkeys = new System.Windows.Forms.Button();
+			this.groupBox2 = new System.Windows.Forms.GroupBox();
+			this.groupBox3 = new System.Windows.Forms.GroupBox();
 			((System.ComponentModel.ISupportInitialize)(this.nudHttpPort)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudHttpsPort)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudIdleMs)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudSyncPort)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudInputWakefulnessStrength)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.nudProgressBarLength)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.nudProgressBarStart)).BeginInit();
 			this.groupBox1.SuspendLayout();
+			this.groupBox2.SuspendLayout();
+			this.groupBox3.SuspendLayout();
 			this.SuspendLayout();
 			// 
 			// label1
 			// 
 			this.label1.AutoSize = true;
-			this.label1.Location = new System.Drawing.Point(12, 37);
+			this.label1.Location = new System.Drawing.Point(6, 26);
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(61, 13);
 			this.label1.TabIndex = 0;
@@ -86,7 +99,7 @@
 			// 
 			// nudHttpPort
 			// 
-			this.nudHttpPort.Location = new System.Drawing.Point(79, 35);
+			this.nudHttpPort.Location = new System.Drawing.Point(73, 24);
 			this.nudHttpPort.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -99,14 +112,14 @@
             -2147483648});
 			this.nudHttpPort.Name = "nudHttpPort";
 			this.nudHttpPort.Size = new System.Drawing.Size(72, 20);
-			this.nudHttpPort.TabIndex = 1;
+			this.nudHttpPort.TabIndex = 21;
 			this.toolTip1.SetToolTip(this.nudHttpPort, "[1-65535]\r\n\r\nIf 0, the port is dynamically selected.\r\n\r\nIf -1, the protocol is di" +
         "sabled.\r\n");
 			this.nudHttpPort.ValueChanged += new System.EventHandler(this.nudHttpPort_ValueChanged);
 			// 
 			// nudHttpsPort
 			// 
-			this.nudHttpsPort.Location = new System.Drawing.Point(254, 35);
+			this.nudHttpsPort.Location = new System.Drawing.Point(239, 24);
 			this.nudHttpsPort.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -119,7 +132,7 @@
             -2147483648});
 			this.nudHttpsPort.Name = "nudHttpsPort";
 			this.nudHttpsPort.Size = new System.Drawing.Size(72, 20);
-			this.nudHttpsPort.TabIndex = 3;
+			this.nudHttpsPort.TabIndex = 22;
 			this.toolTip1.SetToolTip(this.nudHttpsPort, "[1-65535]\r\n\r\nIf 0, the port is dynamically selected.\r\n\r\nIf -1, the protocol is di" +
         "sabled.\r\n");
 			this.nudHttpsPort.ValueChanged += new System.EventHandler(this.nudHttpsPort_ValueChanged);
@@ -127,7 +140,7 @@
 			// label2
 			// 
 			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(180, 37);
+			this.label2.Location = new System.Drawing.Point(165, 26);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(68, 13);
 			this.label2.TabIndex = 2;
@@ -138,7 +151,7 @@
 			// lblCurrentHttp
 			// 
 			this.lblCurrentHttp.AutoSize = true;
-			this.lblCurrentHttp.Location = new System.Drawing.Point(12, 58);
+			this.lblCurrentHttp.Location = new System.Drawing.Point(6, 47);
 			this.lblCurrentHttp.Name = "lblCurrentHttp";
 			this.lblCurrentHttp.Size = new System.Drawing.Size(94, 13);
 			this.lblCurrentHttp.TabIndex = 5;
@@ -148,7 +161,7 @@
 			// 
 			// nudIdleMs
 			// 
-			this.nudIdleMs.Location = new System.Drawing.Point(78, 76);
+			this.nudIdleMs.Location = new System.Drawing.Point(73, 68);
 			this.nudIdleMs.Maximum = new decimal(new int[] {
             3600000,
             0,
@@ -156,19 +169,21 @@
             0});
 			this.nudIdleMs.Name = "nudIdleMs";
 			this.nudIdleMs.Size = new System.Drawing.Size(80, 20);
-			this.nudIdleMs.TabIndex = 7;
-			this.toolTip1.SetToolTip(this.nudIdleMs, "The system is considered idle this many milliseconds after the last user input.");
+			this.nudIdleMs.TabIndex = 23;
+			this.toolTip1.SetToolTip(this.nudIdleMs, "The system is considered idle this many milliseconds after the last user input.\r\n" +
+        "(Affects Web Server API commands that require \"idle\" state)");
 			this.nudIdleMs.ValueChanged += new System.EventHandler(this.nudIdleMs_ValueChanged);
 			// 
 			// label3
 			// 
 			this.label3.AutoSize = true;
-			this.label3.Location = new System.Drawing.Point(19, 78);
+			this.label3.Location = new System.Drawing.Point(14, 70);
 			this.label3.Name = "label3";
 			this.label3.Size = new System.Drawing.Size(53, 13);
 			this.label3.TabIndex = 6;
 			this.label3.Text = "Idle Time:";
-			this.toolTip1.SetToolTip(this.label3, "The system is considered idle this many milliseconds after the last user input.");
+			this.toolTip1.SetToolTip(this.label3, "The system is considered idle this many milliseconds after the last user input.\r\n" +
+        "(Affects Web Server API commands that require \"idle\" state)");
 			// 
 			// toolTip1
 			// 
@@ -179,18 +194,18 @@
 			// label4
 			// 
 			this.label4.AutoSize = true;
-			this.label4.Location = new System.Drawing.Point(164, 78);
+			this.label4.Location = new System.Drawing.Point(159, 70);
 			this.label4.Name = "label4";
 			this.label4.Size = new System.Drawing.Size(63, 13);
 			this.label4.TabIndex = 8;
 			this.label4.Text = "milliseconds";
-			this.toolTip1.SetToolTip(this.label4, "The system is considered idle this many milliseconds after the last user input.");
+			this.toolTip1.SetToolTip(this.label4, "The system is considered idle this many milliseconds after the last user input.\r\n" +
+        "(Affects Web Server API commands that require \"idle\" state)");
 			// 
 			// label5
 			// 
-			this.label5.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.label5.AutoSize = true;
-			this.label5.Location = new System.Drawing.Point(12, 259);
+			this.label5.Location = new System.Drawing.Point(12, 366);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(101, 13);
 			this.label5.TabIndex = 10;
@@ -199,14 +214,12 @@
 			// 
 			// txtIpWhitelist
 			// 
-			this.txtIpWhitelist.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.txtIpWhitelist.Location = new System.Drawing.Point(12, 275);
+			this.txtIpWhitelist.Location = new System.Drawing.Point(12, 382);
 			this.txtIpWhitelist.Multiline = true;
 			this.txtIpWhitelist.Name = "txtIpWhitelist";
 			this.txtIpWhitelist.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
 			this.txtIpWhitelist.Size = new System.Drawing.Size(317, 120);
-			this.txtIpWhitelist.TabIndex = 20;
+			this.txtIpWhitelist.TabIndex = 50;
 			this.toolTip1.SetToolTip(this.txtIpWhitelist, "Separate items with new lines, spaces, tabs, or commas.");
 			this.txtIpWhitelist.TextChanged += new System.EventHandler(this.txtIpWhitelist_TextChanged);
 			// 
@@ -214,10 +227,10 @@
 			// 
 			this.btnExitProgram.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnExitProgram.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
-			this.btnExitProgram.Location = new System.Drawing.Point(548, 401);
+			this.btnExitProgram.Location = new System.Drawing.Point(548, 514);
 			this.btnExitProgram.Name = "btnExitProgram";
 			this.btnExitProgram.Size = new System.Drawing.Size(146, 23);
-			this.btnExitProgram.TabIndex = 40;
+			this.btnExitProgram.TabIndex = 92;
 			this.btnExitProgram.Text = "Exit Program";
 			this.toolTip1.SetToolTip(this.btnExitProgram, "Closes the program. If you simply close this window, the program will remain runn" +
         "ing in the system tray.");
@@ -260,7 +273,7 @@
             0});
 			this.nudSyncPort.Name = "nudSyncPort";
 			this.nudSyncPort.Size = new System.Drawing.Size(72, 20);
-			this.nudSyncPort.TabIndex = 11;
+			this.nudSyncPort.TabIndex = 42;
 			this.toolTip1.SetToolTip(this.nudSyncPort, "[1-65535] HTTP or HTTPS listening port on the server we are synchronizing with.");
 			this.nudSyncPort.Value = new decimal(new int[] {
             1,
@@ -274,7 +287,7 @@
 			this.txtSyncAddress.Location = new System.Drawing.Point(60, 19);
 			this.txtSyncAddress.Name = "txtSyncAddress";
 			this.txtSyncAddress.Size = new System.Drawing.Size(138, 20);
-			this.txtSyncAddress.TabIndex = 10;
+			this.txtSyncAddress.TabIndex = 41;
 			this.toolTip1.SetToolTip(this.txtSyncAddress, "Host name or IP address of the server we are synchronizing with. Leave empty to d" +
         "isable sync.");
 			this.txtSyncAddress.TextChanged += new System.EventHandler(this.txtSyncAddress_TextChanged);
@@ -285,7 +298,7 @@
 			this.cbSyncHTTPS.Location = new System.Drawing.Point(239, 47);
 			this.cbSyncHTTPS.Name = "cbSyncHTTPS";
 			this.cbSyncHTTPS.Size = new System.Drawing.Size(62, 17);
-			this.cbSyncHTTPS.TabIndex = 13;
+			this.cbSyncHTTPS.TabIndex = 44;
 			this.cbSyncHTTPS.Text = "HTTPS";
 			this.toolTip1.SetToolTip(this.cbSyncHTTPS, "Check this box to use HTTPS. Uncheck to use HTTP.");
 			this.cbSyncHTTPS.UseVisualStyleBackColor = true;
@@ -302,7 +315,7 @@
 			this.ddlSyncFailureAction.Location = new System.Drawing.Point(82, 45);
 			this.ddlSyncFailureAction.Name = "ddlSyncFailureAction";
 			this.ddlSyncFailureAction.Size = new System.Drawing.Size(121, 21);
-			this.ddlSyncFailureAction.TabIndex = 12;
+			this.ddlSyncFailureAction.TabIndex = 43;
 			this.toolTip1.SetToolTip(this.ddlSyncFailureAction, "Action to take if the remote server is unreachable.");
 			this.ddlSyncFailureAction.SelectedIndexChanged += new System.EventHandler(this.ddlSyncFailureAction_SelectedIndexChanged);
 			// 
@@ -322,7 +335,7 @@
 			this.cbSyncMuteWhenOff.Location = new System.Drawing.Point(6, 72);
 			this.cbSyncMuteWhenOff.Name = "cbSyncMuteWhenOff";
 			this.cbSyncMuteWhenOff.Size = new System.Drawing.Size(200, 17);
-			this.cbSyncMuteWhenOff.TabIndex = 14;
+			this.cbSyncMuteWhenOff.TabIndex = 45;
 			this.cbSyncMuteWhenOff.Text = "Mute audio when turning off monitors";
 			this.toolTip1.SetToolTip(this.cbSyncMuteWhenOff, "Mute audio when turning off monitors because of remote server sync.\r\n\r\nAudio retu" +
         "rns to previous state when monitors turn back on.");
@@ -335,7 +348,7 @@
 			this.cbAllowLocalOverride.Location = new System.Drawing.Point(6, 95);
 			this.cbAllowLocalOverride.Name = "cbAllowLocalOverride";
 			this.cbAllowLocalOverride.Size = new System.Drawing.Size(218, 17);
-			this.cbAllowLocalOverride.TabIndex = 15;
+			this.cbAllowLocalOverride.TabIndex = 46;
 			this.cbAllowLocalOverride.Text = "Allow local input to override synced state";
 			this.toolTip1.SetToolTip(this.cbAllowLocalOverride, "If enabled, local inputs can un-sync this machine \r\nfrom the remote server until " +
         "the remote server \r\nhas another state change.\r\n\r\nIf disabled, the synced state i" +
@@ -345,7 +358,7 @@
 			// 
 			// nudInputWakefulnessStrength
 			// 
-			this.nudInputWakefulnessStrength.Location = new System.Drawing.Point(162, 102);
+			this.nudInputWakefulnessStrength.Location = new System.Drawing.Point(150, 71);
 			this.nudInputWakefulnessStrength.Maximum = new decimal(new int[] {
             10,
             0,
@@ -353,8 +366,9 @@
             0});
 			this.nudInputWakefulnessStrength.Name = "nudInputWakefulnessStrength";
 			this.nudInputWakefulnessStrength.Size = new System.Drawing.Size(50, 20);
-			this.nudInputWakefulnessStrength.TabIndex = 8;
-			this.toolTip1.SetToolTip(this.nudInputWakefulnessStrength, resources.GetString("nudInputWakefulnessStrength.ToolTip"));
+			this.nudInputWakefulnessStrength.TabIndex = 33;
+			this.toolTip1.SetToolTip(this.nudInputWakefulnessStrength, "Each input event adds progress to the \"Partial Wake\" progress bar.\r\n\r\nIncrease th" +
+        "is number to increase the rate of fill.");
 			this.nudInputWakefulnessStrength.Value = new decimal(new int[] {
             3,
             0,
@@ -365,20 +379,21 @@
 			// label9
 			// 
 			this.label9.AutoSize = true;
-			this.label9.Location = new System.Drawing.Point(19, 104);
+			this.label9.Location = new System.Drawing.Point(7, 73);
 			this.label9.Name = "label9";
 			this.label9.Size = new System.Drawing.Size(137, 13);
 			this.label9.TabIndex = 61;
 			this.label9.Text = "Input wakefulness strength:";
-			this.toolTip1.SetToolTip(this.label9, resources.GetString("label9.ToolTip"));
+			this.toolTip1.SetToolTip(this.label9, "Each input event adds progress to the \"Partial Wake\" progress bar.\r\n\r\nIncrease th" +
+        "is number to increase the rate of fill.");
 			// 
 			// txtCommandsOn
 			// 
-			this.txtCommandsOn.Location = new System.Drawing.Point(335, 275);
+			this.txtCommandsOn.Location = new System.Drawing.Point(338, 357);
 			this.txtCommandsOn.Multiline = true;
 			this.txtCommandsOn.Name = "txtCommandsOn";
-			this.txtCommandsOn.Size = new System.Drawing.Size(359, 120);
-			this.txtCommandsOn.TabIndex = 26;
+			this.txtCommandsOn.Size = new System.Drawing.Size(359, 145);
+			this.txtCommandsOn.TabIndex = 80;
 			this.toolTip1.SetToolTip(this.txtCommandsOn, resources.GetString("txtCommandsOn.ToolTip"));
 			this.txtCommandsOn.TextChanged += new System.EventHandler(this.txtCommandsOn_TextChanged);
 			// 
@@ -387,8 +402,8 @@
 			this.txtCommandsOff.Location = new System.Drawing.Point(335, 31);
 			this.txtCommandsOff.Multiline = true;
 			this.txtCommandsOff.Name = "txtCommandsOff";
-			this.txtCommandsOff.Size = new System.Drawing.Size(359, 91);
-			this.txtCommandsOff.TabIndex = 24;
+			this.txtCommandsOff.Size = new System.Drawing.Size(359, 137);
+			this.txtCommandsOff.TabIndex = 60;
 			this.toolTip1.SetToolTip(this.txtCommandsOff, resources.GetString("txtCommandsOff.ToolTip"));
 			this.txtCommandsOff.TextChanged += new System.EventHandler(this.txtCommandsOff_TextChanged);
 			// 
@@ -405,7 +420,7 @@
 			// label12
 			// 
 			this.label12.AutoSize = true;
-			this.label12.Location = new System.Drawing.Point(335, 259);
+			this.label12.Location = new System.Drawing.Point(335, 341);
 			this.label12.Name = "label12";
 			this.label12.Size = new System.Drawing.Size(265, 13);
 			this.label12.TabIndex = 66;
@@ -414,7 +429,7 @@
 			// 
 			// label13
 			// 
-			this.label13.Location = new System.Drawing.Point(335, 125);
+			this.label13.Location = new System.Drawing.Point(335, 171);
 			this.label13.Name = "label13";
 			this.label13.Size = new System.Drawing.Size(359, 32);
 			this.label13.TabIndex = 68;
@@ -424,21 +439,126 @@
 			// 
 			// txtCommandsOffAfterDelay
 			// 
-			this.txtCommandsOffAfterDelay.Location = new System.Drawing.Point(335, 160);
+			this.txtCommandsOffAfterDelay.Location = new System.Drawing.Point(338, 206);
 			this.txtCommandsOffAfterDelay.Multiline = true;
 			this.txtCommandsOffAfterDelay.Name = "txtCommandsOffAfterDelay";
-			this.txtCommandsOffAfterDelay.Size = new System.Drawing.Size(359, 96);
-			this.txtCommandsOffAfterDelay.TabIndex = 25;
+			this.txtCommandsOffAfterDelay.Size = new System.Drawing.Size(359, 132);
+			this.txtCommandsOffAfterDelay.TabIndex = 70;
 			this.toolTip1.SetToolTip(this.txtCommandsOffAfterDelay, resources.GetString("txtCommandsOffAfterDelay.ToolTip"));
 			this.txtCommandsOffAfterDelay.TextChanged += new System.EventHandler(this.txtCommandsOffAfterDelay_TextChanged);
+			// 
+			// label10
+			// 
+			this.label10.AutoSize = true;
+			this.label10.Location = new System.Drawing.Point(205, 73);
+			this.label10.Name = "label10";
+			this.label10.Size = new System.Drawing.Size(84, 13);
+			this.label10.TabIndex = 62;
+			this.label10.Text = "(0-10; default: 3)";
+			this.toolTip1.SetToolTip(this.label10, "Each input event adds progress to the \"Partial Wake\" progress bar.\r\n\r\nIncrease th" +
+        "is number to increase the rate of fill.");
+			// 
+			// label14
+			// 
+			this.label14.AutoSize = true;
+			this.label14.Location = new System.Drawing.Point(175, 21);
+			this.label14.Name = "label14";
+			this.label14.Size = new System.Drawing.Size(109, 13);
+			this.label14.TabIndex = 65;
+			this.label14.Text = "(seconds; default: 20)";
+			this.toolTip1.SetToolTip(this.label14, "The full length of the \"Partial Wake\" progress bar, in seconds.");
+			// 
+			// label15
+			// 
+			this.label15.AutoSize = true;
+			this.label15.Location = new System.Drawing.Point(7, 21);
+			this.label15.Name = "label15";
+			this.label15.Size = new System.Drawing.Size(106, 13);
+			this.label15.TabIndex = 64;
+			this.label15.Text = "Progress Bar Length:";
+			this.toolTip1.SetToolTip(this.label15, "The full length of the \"Partial Wake\" progress bar, in seconds.");
+			// 
+			// nudProgressBarLength
+			// 
+			this.nudProgressBarLength.Location = new System.Drawing.Point(119, 19);
+			this.nudProgressBarLength.Maximum = new decimal(new int[] {
+            60,
+            0,
+            0,
+            0});
+			this.nudProgressBarLength.Minimum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+			this.nudProgressBarLength.Name = "nudProgressBarLength";
+			this.nudProgressBarLength.Size = new System.Drawing.Size(50, 20);
+			this.nudProgressBarLength.TabIndex = 31;
+			this.toolTip1.SetToolTip(this.nudProgressBarLength, "The full length of the \"Partial Wake\" progress bar, in seconds.");
+			this.nudProgressBarLength.Value = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+			this.nudProgressBarLength.ValueChanged += new System.EventHandler(this.nudProgressBarLength_ValueChanged);
+			// 
+			// label16
+			// 
+			this.label16.AutoSize = true;
+			this.label16.Location = new System.Drawing.Point(175, 47);
+			this.label16.Name = "label16";
+			this.label16.Size = new System.Drawing.Size(109, 13);
+			this.label16.TabIndex = 68;
+			this.label16.Text = "(seconds; default: 10)";
+			this.toolTip1.SetToolTip(this.label16, "The \"Partial Wake\" progress bar begins at this position when monitor wake is dete" +
+        "cted.\r\n\r\nThis is the number of seconds after which monitors will go back to slee" +
+        "p if inputs are not detected.");
+			// 
+			// label17
+			// 
+			this.label17.AutoSize = true;
+			this.label17.Location = new System.Drawing.Point(7, 47);
+			this.label17.Name = "label17";
+			this.label17.Size = new System.Drawing.Size(95, 13);
+			this.label17.TabIndex = 67;
+			this.label17.Text = "Progress Bar Start:";
+			this.toolTip1.SetToolTip(this.label17, "The \"Partial Wake\" progress bar begins at this position when monitor wake is dete" +
+        "cted.\r\n\r\nThis is the number of seconds after which monitors will go back to slee" +
+        "p if inputs are not detected.");
+			// 
+			// nudProgressBarStart
+			// 
+			this.nudProgressBarStart.Location = new System.Drawing.Point(119, 45);
+			this.nudProgressBarStart.Maximum = new decimal(new int[] {
+            59,
+            0,
+            0,
+            0});
+			this.nudProgressBarStart.Minimum = new decimal(new int[] {
+            4,
+            0,
+            0,
+            0});
+			this.nudProgressBarStart.Name = "nudProgressBarStart";
+			this.nudProgressBarStart.Size = new System.Drawing.Size(50, 20);
+			this.nudProgressBarStart.TabIndex = 32;
+			this.toolTip1.SetToolTip(this.nudProgressBarStart, "The \"Partial Wake\" progress bar begins at this position when monitor wake is dete" +
+        "cted.\r\n\r\nThis is the number of seconds after which monitors will go back to slee" +
+        "p if inputs are not detected.");
+			this.nudProgressBarStart.Value = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+			this.nudProgressBarStart.ValueChanged += new System.EventHandler(this.nudProgressBarStart_ValueChanged);
 			// 
 			// btnOpenDataFolder
 			// 
 			this.btnOpenDataFolder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.btnOpenDataFolder.Location = new System.Drawing.Point(12, 401);
+			this.btnOpenDataFolder.Location = new System.Drawing.Point(12, 514);
 			this.btnOpenDataFolder.Name = "btnOpenDataFolder";
 			this.btnOpenDataFolder.Size = new System.Drawing.Size(146, 23);
-			this.btnOpenDataFolder.TabIndex = 30;
+			this.btnOpenDataFolder.TabIndex = 90;
 			this.btnOpenDataFolder.Text = "Open Data Folder";
 			this.btnOpenDataFolder.UseVisualStyleBackColor = true;
 			this.btnOpenDataFolder.Click += new System.EventHandler(this.btnOpenDataFolder_Click);
@@ -446,10 +566,10 @@
 			// btnOpenWebInterface
 			// 
 			this.btnOpenWebInterface.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.btnOpenWebInterface.Location = new System.Drawing.Point(12, 430);
+			this.btnOpenWebInterface.Location = new System.Drawing.Point(12, 543);
 			this.btnOpenWebInterface.Name = "btnOpenWebInterface";
 			this.btnOpenWebInterface.Size = new System.Drawing.Size(146, 23);
-			this.btnOpenWebInterface.TabIndex = 50;
+			this.btnOpenWebInterface.TabIndex = 100;
 			this.btnOpenWebInterface.Text = "Open Web Interface";
 			this.btnOpenWebInterface.UseVisualStyleBackColor = true;
 			this.btnOpenWebInterface.Click += new System.EventHandler(this.btnOpenWebInterface_Click);
@@ -460,7 +580,7 @@
 			this.cbStartAutomatically.Location = new System.Drawing.Point(15, 12);
 			this.cbStartAutomatically.Name = "cbStartAutomatically";
 			this.cbStartAutomatically.Size = new System.Drawing.Size(155, 17);
-			this.cbStartAutomatically.TabIndex = 0;
+			this.cbStartAutomatically.TabIndex = 1;
 			this.cbStartAutomatically.Text = "Start Program Automatically";
 			this.cbStartAutomatically.UseVisualStyleBackColor = true;
 			this.cbStartAutomatically.CheckedChanged += new System.EventHandler(this.cbStartAutomatically_CheckedChanged);
@@ -468,10 +588,10 @@
 			// btnOK
 			// 
 			this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnOK.Location = new System.Drawing.Point(548, 430);
+			this.btnOK.Location = new System.Drawing.Point(548, 543);
 			this.btnOK.Name = "btnOK";
 			this.btnOK.Size = new System.Drawing.Size(146, 23);
-			this.btnOK.TabIndex = 60;
+			this.btnOK.TabIndex = 101;
 			this.btnOK.Text = "OK";
 			this.btnOK.UseVisualStyleBackColor = true;
 			this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
@@ -487,37 +607,72 @@
 			this.groupBox1.Controls.Add(this.label7);
 			this.groupBox1.Controls.Add(this.nudSyncPort);
 			this.groupBox1.Controls.Add(this.label8);
-			this.groupBox1.Location = new System.Drawing.Point(12, 135);
+			this.groupBox1.Location = new System.Drawing.Point(12, 242);
 			this.groupBox1.Name = "groupBox1";
 			this.groupBox1.Size = new System.Drawing.Size(317, 121);
-			this.groupBox1.TabIndex = 10;
+			this.groupBox1.TabIndex = 40;
 			this.groupBox1.TabStop = false;
 			this.groupBox1.Text = "Sync with another MonitorControl server";
 			// 
 			// btnManageHotkeys
 			// 
 			this.btnManageHotkeys.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.btnManageHotkeys.Location = new System.Drawing.Point(167, 401);
+			this.btnManageHotkeys.Location = new System.Drawing.Point(167, 514);
 			this.btnManageHotkeys.Name = "btnManageHotkeys";
 			this.btnManageHotkeys.Size = new System.Drawing.Size(146, 23);
-			this.btnManageHotkeys.TabIndex = 32;
+			this.btnManageHotkeys.TabIndex = 91;
 			this.btnManageHotkeys.Text = "Manage Hotkeys";
 			this.btnManageHotkeys.UseVisualStyleBackColor = true;
 			this.btnManageHotkeys.Click += new System.EventHandler(this.btnManageHotkeys_Click);
+			// 
+			// groupBox2
+			// 
+			this.groupBox2.BackColor = System.Drawing.SystemColors.Control;
+			this.groupBox2.Controls.Add(this.label16);
+			this.groupBox2.Controls.Add(this.label17);
+			this.groupBox2.Controls.Add(this.nudProgressBarStart);
+			this.groupBox2.Controls.Add(this.label14);
+			this.groupBox2.Controls.Add(this.label15);
+			this.groupBox2.Controls.Add(this.nudProgressBarLength);
+			this.groupBox2.Controls.Add(this.label10);
+			this.groupBox2.Controls.Add(this.label9);
+			this.groupBox2.Controls.Add(this.nudInputWakefulnessStrength);
+			this.groupBox2.Location = new System.Drawing.Point(12, 135);
+			this.groupBox2.Name = "groupBox2";
+			this.groupBox2.Size = new System.Drawing.Size(317, 101);
+			this.groupBox2.TabIndex = 30;
+			this.groupBox2.TabStop = false;
+			this.groupBox2.Text = "Partial Wake";
+			// 
+			// groupBox3
+			// 
+			this.groupBox3.Controls.Add(this.label1);
+			this.groupBox3.Controls.Add(this.nudHttpPort);
+			this.groupBox3.Controls.Add(this.label2);
+			this.groupBox3.Controls.Add(this.nudHttpsPort);
+			this.groupBox3.Controls.Add(this.lblCurrentHttp);
+			this.groupBox3.Controls.Add(this.nudIdleMs);
+			this.groupBox3.Controls.Add(this.label3);
+			this.groupBox3.Controls.Add(this.label4);
+			this.groupBox3.Location = new System.Drawing.Point(12, 35);
+			this.groupBox3.Name = "groupBox3";
+			this.groupBox3.Size = new System.Drawing.Size(317, 94);
+			this.groupBox3.TabIndex = 20;
+			this.groupBox3.TabStop = false;
+			this.groupBox3.Text = "Web Server";
 			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(706, 465);
+			this.ClientSize = new System.Drawing.Size(706, 578);
+			this.Controls.Add(this.groupBox3);
 			this.Controls.Add(this.btnManageHotkeys);
 			this.Controls.Add(this.label13);
 			this.Controls.Add(this.label12);
 			this.Controls.Add(this.label11);
 			this.Controls.Add(this.txtCommandsOff);
 			this.Controls.Add(this.txtCommandsOn);
-			this.Controls.Add(this.label9);
-			this.Controls.Add(this.nudInputWakefulnessStrength);
 			this.Controls.Add(this.groupBox1);
 			this.Controls.Add(this.btnOK);
 			this.Controls.Add(this.cbStartAutomatically);
@@ -526,15 +681,8 @@
 			this.Controls.Add(this.btnOpenDataFolder);
 			this.Controls.Add(this.label5);
 			this.Controls.Add(this.txtIpWhitelist);
-			this.Controls.Add(this.label4);
-			this.Controls.Add(this.nudIdleMs);
-			this.Controls.Add(this.label3);
-			this.Controls.Add(this.lblCurrentHttp);
-			this.Controls.Add(this.nudHttpsPort);
-			this.Controls.Add(this.label2);
-			this.Controls.Add(this.nudHttpPort);
-			this.Controls.Add(this.label1);
 			this.Controls.Add(this.txtCommandsOffAfterDelay);
+			this.Controls.Add(this.groupBox2);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 			this.Name = "MainForm";
@@ -547,8 +695,14 @@
 			((System.ComponentModel.ISupportInitialize)(this.nudIdleMs)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudSyncPort)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudInputWakefulnessStrength)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.nudProgressBarLength)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.nudProgressBarStart)).EndInit();
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox1.PerformLayout();
+			this.groupBox2.ResumeLayout(false);
+			this.groupBox2.PerformLayout();
+			this.groupBox3.ResumeLayout(false);
+			this.groupBox3.PerformLayout();
 			this.ResumeLayout(false);
 			this.PerformLayout();
 
@@ -591,6 +745,15 @@
 		private System.Windows.Forms.Label label13;
 		private System.Windows.Forms.TextBox txtCommandsOffAfterDelay;
 		private System.Windows.Forms.Button btnManageHotkeys;
+		private System.Windows.Forms.GroupBox groupBox2;
+		private System.Windows.Forms.Label label10;
+		private System.Windows.Forms.GroupBox groupBox3;
+		private System.Windows.Forms.Label label16;
+		private System.Windows.Forms.Label label17;
+		private System.Windows.Forms.NumericUpDown nudProgressBarStart;
+		private System.Windows.Forms.Label label14;
+		private System.Windows.Forms.Label label15;
+		private System.Windows.Forms.NumericUpDown nudProgressBarLength;
 	}
 }
 

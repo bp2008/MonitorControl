@@ -218,6 +218,16 @@ namespace MonitorControl
 		/// Set = true while the hotkey editor dialog is open to prevent hotkeys from taking effect.
 		/// </summary>
 		public static bool hotkeyEditorOpen = false;
+		/// <summary>
+		/// The wakefulness level (0.0 - 1.0) where the partial wake dialog will begin when sleep is triggered via hotkey. 
+		/// </summary>
+		private static double hotkeySleepStartingWakefulness
+		{
+			get
+			{
+				return (double)Math.Min(5, Program.settings.partialWakeMax - 1) / (double)Program.settings.partialWakeMax;
+			}
+		}
 		private void KeyboardHook_KeyPressedAsync(object sender, AsyncKeyPressEventArgs e)
 		{
 			if (hotkeyEditorOpen)
@@ -229,11 +239,11 @@ namespace MonitorControl
 				{
 					if (hotkey.Action == ActionType.MonitorsOff)
 					{
-						PartialWakeController.BeginPartialWakeState(false, 0.25);
+						PartialWakeController.BeginPartialWakeState(false, hotkeySleepStartingWakefulness);
 					}
 					else if (hotkey.Action == ActionType.MonitorsOffAndMute)
 					{
-						PartialWakeController.BeginPartialWakeState(true, 0.25);
+						PartialWakeController.BeginPartialWakeState(true, hotkeySleepStartingWakefulness);
 					}
 					else if (hotkey.Action == ActionType.Mute)
 					{

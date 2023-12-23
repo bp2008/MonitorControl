@@ -36,6 +36,8 @@ namespace MonitorControl
 			nudHttpPort.Value = Program.settings.http_port;
 			nudHttpsPort.Value = Program.settings.https_port;
 			nudIdleMs.Value = Program.settings.idleTimeMs;
+			nudProgressBarLength.Value = Program.settings.partialWakeMax;
+			nudProgressBarStart.Value = Program.settings.partialWakeStart;
 			nudInputWakefulnessStrength.Value = Program.settings.inputWakefulnessStrength;
 			txtIpWhitelist.Text = Program.settings.GetIpWhitelistString();
 			txtSyncAddress.Text = Program.settings.syncAddress;
@@ -160,6 +162,34 @@ namespace MonitorControl
 			Program.settings.syncAllowLocalOverride = cbAllowLocalOverride.Checked;
 			if (old != Program.settings.syncAllowLocalOverride)
 				Program.settings.Save();
+		}
+
+		private void nudProgressBarLength_ValueChanged(object sender, EventArgs e)
+		{
+			int old = Program.settings.partialWakeMax;
+			Program.settings.partialWakeMax = (int)nudProgressBarLength.Value;
+			if (old != Program.settings.partialWakeMax)
+			{
+				EnforcePartialWakeProgressBarLimits();
+				Program.settings.Save();
+			}
+		}
+
+		private void nudProgressBarStart_ValueChanged(object sender, EventArgs e)
+		{
+			int old = Program.settings.partialWakeStart;
+			Program.settings.partialWakeStart = (int)nudProgressBarStart.Value;
+			if (old != Program.settings.partialWakeStart)
+			{
+				EnforcePartialWakeProgressBarLimits();
+				Program.settings.Save();
+			}
+		}
+
+		private void EnforcePartialWakeProgressBarLimits()
+		{
+			if (nudProgressBarStart.Value >= nudProgressBarLength.Value)
+				nudProgressBarStart.Value = (int)nudProgressBarLength.Value - 1;
 		}
 
 		private void nudInputsRequiredToWake_ValueChanged(object sender, EventArgs e)

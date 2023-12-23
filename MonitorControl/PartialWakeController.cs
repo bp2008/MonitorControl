@@ -42,10 +42,19 @@ namespace MonitorControl
 				partialWakeThread.Start();
 			}
 		}
+		/// <summary>
+		/// Amount of wakefulness that is lost per second (based on total seconds of wakefulness progress bar).
+		/// </summary>
+		static double wakefulnessLossPerSecond
+		{
+			get
+			{
+				return 1.0 / (double)Program.settings.partialWakeMax;
+			}
+		}
 		private static void PartialWakeThreadLoop()
 		{
 			const int iterationInterval = 100;
-			const double wakefulnessLossPerSecond = 0.05;
 			int strength = Program.settings.inputWakefulnessStrength <= 0 ? 3 : Program.settings.inputWakefulnessStrength.Clamp(1, 10);
 			double wakefulnessGainPerInput = strength * 0.0125;
 
