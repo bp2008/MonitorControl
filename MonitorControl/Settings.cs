@@ -10,6 +10,10 @@ namespace MonitorControl
 	{
 		public int http_port = 8001;
 		public int https_port = -1;
+		/// <summary>
+		/// If true, webserver requests will be logged to files.
+		/// </summary>
+		public bool logWebserverRequests;
 		public int idleTimeMs = 3000;
 		public string ip_whitelist = "127.0.0.1";
 		public string syncAddress = "";

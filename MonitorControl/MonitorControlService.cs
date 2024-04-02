@@ -34,7 +34,6 @@ namespace MonitorControl
 
 		public MonitorControlService()
 		{
-			BPUtil.SimpleHttp.SimpleHttpLogger.RegisterLogger(BPUtil.Logger.httpLogger);
 		}
 		/// <summary>
 		/// Stops and then starts the service.
@@ -43,10 +42,10 @@ namespace MonitorControl
 		{
 			Stop();
 
-			Logger.StartLoggingThreads();
-
 			httpServer = new MonitorControlServer();
 			httpServer.SocketBound += HttpServer_SocketBound;
+			httpServer.EnableLogging(false);
+
 			BindHttpServerSockets();
 
 			thrSyncWithOtherServer = new Thread(SyncWithOtherServer);
@@ -91,7 +90,6 @@ namespace MonitorControl
 			httpServer = null;
 			thrSyncWithOtherServer?.Abort();
 			thrSyncWithOtherServer = null;
-			Logger.StopLoggingThreads();
 		}
 
 		private void HttpServer_SocketBound(object sender, string e)

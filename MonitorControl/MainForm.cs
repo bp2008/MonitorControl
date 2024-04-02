@@ -36,6 +36,7 @@ namespace MonitorControl
 			nudHttpPort.Value = Program.settings.http_port;
 			nudHttpsPort.Value = Program.settings.https_port;
 			nudIdleMs.Value = Program.settings.idleTimeMs;
+			cbLogRequests.Checked = Program.settings.logWebserverRequests;
 			nudProgressBarLength.Value = Program.settings.partialWakeMax;
 			nudProgressBarStart.Value = Program.settings.partialWakeStart;
 			nudInputWakefulnessStrength.Value = Program.settings.inputWakefulnessStrength;
@@ -106,6 +107,14 @@ namespace MonitorControl
 			int old = Program.settings.idleTimeMs;
 			Program.settings.idleTimeMs = (int)nudIdleMs.Value;
 			if (old != Program.settings.idleTimeMs)
+				Program.settings.Save();
+		}
+
+		private void cbLogRequests_CheckedChanged(object sender, EventArgs e)
+		{
+			bool old = Program.settings.logWebserverRequests;
+			Program.settings.logWebserverRequests = cbLogRequests.Checked;
+			if (old != Program.settings.logWebserverRequests)
 				Program.settings.Save();
 		}
 
@@ -256,13 +265,17 @@ namespace MonitorControl
 		{
 			try
 			{
-				if (cbStartAutomatically.Checked)
+				bool isStartingAutomatically = CheckAutomaticStartup();
+				if (cbStartAutomatically.Checked != isStartingAutomatically)
 				{
-					CreateStartupTask();
-				}
-				else
-				{
-					DeleteStartupTask();
+					if (cbStartAutomatically.Checked)
+					{
+						CreateStartupTask();
+					}
+					else
+					{
+						DeleteStartupTask();
+					}
 				}
 			}
 			catch (Exception ex)

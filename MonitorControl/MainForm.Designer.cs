@@ -74,6 +74,7 @@
 			this.btnManageHotkeys = new System.Windows.Forms.Button();
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
+			this.cbLogRequests = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.nudHttpPort)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudHttpsPort)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudIdleMs)).BeginInit();
@@ -196,9 +197,9 @@
 			this.label4.AutoSize = true;
 			this.label4.Location = new System.Drawing.Point(159, 70);
 			this.label4.Name = "label4";
-			this.label4.Size = new System.Drawing.Size(63, 13);
+			this.label4.Size = new System.Drawing.Size(20, 13);
 			this.label4.TabIndex = 8;
-			this.label4.Text = "milliseconds";
+			this.label4.Text = "ms";
 			this.toolTip1.SetToolTip(this.label4, "The system is considered idle this many milliseconds after the last user input.\r\n" +
         "(Affects Web Server API commands that require \"idle\" state)");
 			// 
@@ -646,6 +647,7 @@
 			// 
 			// groupBox3
 			// 
+			this.groupBox3.Controls.Add(this.cbLogRequests);
 			this.groupBox3.Controls.Add(this.label1);
 			this.groupBox3.Controls.Add(this.nudHttpPort);
 			this.groupBox3.Controls.Add(this.label2);
@@ -660,6 +662,17 @@
 			this.groupBox3.TabIndex = 20;
 			this.groupBox3.TabStop = false;
 			this.groupBox3.Text = "Web Server";
+			// 
+			// cbLogRequests
+			// 
+			this.cbLogRequests.AutoSize = true;
+			this.cbLogRequests.Location = new System.Drawing.Point(219, 69);
+			this.cbLogRequests.Name = "cbLogRequests";
+			this.cbLogRequests.Size = new System.Drawing.Size(92, 17);
+			this.cbLogRequests.TabIndex = 24;
+			this.cbLogRequests.Text = "Log Requests";
+			this.cbLogRequests.UseVisualStyleBackColor = true;
+			this.cbLogRequests.CheckedChanged += new System.EventHandler(this.cbLogRequests_CheckedChanged);
 			// 
 			// MainForm
 			// 
@@ -754,6 +767,7 @@
 		private System.Windows.Forms.Label label14;
 		private System.Windows.Forms.Label label15;
 		private System.Windows.Forms.NumericUpDown nudProgressBarLength;
+		private System.Windows.Forms.CheckBox cbLogRequests;
 	}
 }
 

@@ -84,6 +84,7 @@ namespace MonitorControl
 			{
 				panelHotkeys.Controls.Remove(control);
 				Program.settings.hotkeys.Remove(hotkey);
+				Program.settings.Save();
 			};
 
 			control.ActionChanged += (sender2, e2) =>

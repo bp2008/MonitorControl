@@ -350,6 +350,16 @@ namespace MonitorControl
 		{
 		}
 
+		public override bool shouldLogSocketBind()
+		{
+			return true;
+		}
+
+		public override bool shouldLogRequestsToFile()
+		{
+			return Program.settings.logWebserverRequests;
+		}
+
 		protected override void stopServer()
 		{
 			UnmuteIfNeeded();
