@@ -210,11 +210,59 @@ namespace MonitorControl
 					Program.settings.Save();
 					p.Response.FullResponseUTF8("❌ Allow local input to override synced state", "text/plain; charset=utf-8");
 				}
+				else if (p.Request.Page == "GetDisplayIdleTimeout")
+				{
+					try
+					{
+						uint timeout = WinSleep.GetMonitorTimeoutSeconds_AC();
+						p.Response.FullResponseUTF8(timeout.ToString(), "text/plain; charset=utf-8");
+					}
+					catch (Exception ex)
+					{
+						Logger.Debug(ex);
+						p.Response.FullResponseUTF8(ex.Message, "text/plain; charset=utf-8", "500 Internal Server Error");
+					}
+				}
+				else if (p.Request.Page == "SetDisplayIdleTimeout")
+				{
+					long v = p.Request.GetLongParam("seconds", -1);
+					if (v < 0)
+					{
+						p.Response.FullResponseUTF8("Missing or invalid seconds parameter.", "text/plain; charset=utf-8", "400 Bad Request");
+						return;
+					}
+					uint seconds = (uint)v.Clamp(0, uint.MaxValue);
+					try
+					{
+						WinSleep.SetMonitorTimeoutSeconds_AC(seconds);
+						p.Response.FullResponseUTF8("OK", "text/plain; charset=utf-8");
+					}
+					catch (Exception ex)
+					{
+						Logger.Debug(ex);
+						p.Response.FullResponseUTF8(ex.Message, "text/plain; charset=utf-8", "500 Internal Server Error");
+					}
+				}
 				else
 					successMessage = "";
 
 				if (p.Response.StatusString.StartsWith("404"))
 				{
+					string monitorIdleTimeout = "";
+					try
+					{
+						uint timeout = WinSleep.GetMonitorTimeoutSeconds_AC();
+						if (timeout == 0)
+							monitorIdleTimeout = "never";
+						else
+							monitorIdleTimeout = TimeUtil.ToDHMS((long)timeout * 1000);
+					}
+					catch (Exception ex)
+					{
+						Logger.Debug(ex);
+						monitorIdleTimeout = ex.Message;
+					}
+
 					p.Response.FullResponseUTF8("<html><head><title>Monitor Control Service</title></head>"
 						+ "<style type=\"text/css\">"
 						+ " table { border-collapse: collapse; }"
@@ -223,6 +271,8 @@ namespace MonitorControl
 						+ "<body>"
 						+ "<p class=\"result\">" + successMessage + "</p>"
 						+ "<p class=\"syncStatus\">(Remote server \"" + Program.settings.syncAddress + "\") " + HttpUtility.HtmlEncode(MonitorControlService.syncedServerStatus) + "</p>"
+						+ "<p>Current display status: " + Program.CurrentDisplayState + "</p>"
+						+ "<p>(Power settings) Monitors off after: " + monitorIdleTimeout + "</p>"
 						+ "<table>"
 						//+ "<thead>"
 						//+ "<tr><th></th><th></th></tr>"
@@ -251,6 +301,12 @@ namespace MonitorControl
 						+ BuildRow("mousemove?dx=2&dy=-2&delay=4&times=5", "moves the mouse cursor up 2px and to the right 2px, 5 times, waiting 4ms between each movement. Max delay 200ms. Max 5 seconds movement per command.")
 						+ BuildRow("AllowLocalOverride", "Enables the setting \"Allow local input to override synced state\"")
 						+ BuildRow("DisallowLocalOverride", "Disables the setting \"Allow local input to override synced state\"")
+						+ BuildRow("GetDisplayIdleTimeout", "Gets the display idle timeout in the current OS power profile, in seconds (0 means never turn off the displays due to inactivity)")
+						+ BuildRow("SetDisplayIdleTimeout?seconds=0", "Sets the display idle timeout in the current OS power profile, to never turn off the displays.")
+						+ BuildRow("SetDisplayIdleTimeout?seconds=1", "Sets the display idle timeout in the current OS power profile, to 1 second.")
+						+ BuildRow("SetDisplayIdleTimeout?seconds=300", "Sets the display idle timeout in the current OS power profile, to 300 seconds (5 minutes).")
+						+ BuildRow("SetDisplayIdleTimeout?seconds=600", "Sets the display idle timeout in the current OS power profile, to 600 seconds (10 minutes).")
+						+ BuildRow("SetDisplayIdleTimeout?seconds=900", "Sets the display idle timeout in the current OS power profile, to 900 seconds (15 minutes).")
 						+ "</tbody>"
 						+ "</table>"
 						+ "</body>"
@@ -543,6 +599,7 @@ namespace MonitorControl
 					string[] commands = commandStr
 						.Split(new char[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries)
 						.Select(cmd => cmd.Trim())
+						.Where(cmd => !cmd.StartsWith("#"))
 						.ToArray();
 					//List<ProcessRunnerHandle> processes = new List<ProcessRunnerHandle>();
 					foreach (string cmdRaw in commands)

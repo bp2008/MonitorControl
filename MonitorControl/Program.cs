@@ -16,6 +16,11 @@ namespace MonitorControl
 	{
 		public static Settings settings;
 		public static MonitorControlService service = null;
+		/// <summary>
+		/// <para>Gets the current display state.  It will be the "Unknown" state until the first state change message is received from the OS.</para>
+		/// <para>The value should become known shortly after application startup.</para>
+		/// </summary>
+		public static DisplayState CurrentDisplayState => context?.CurrentDisplayState ?? DisplayState.Unknown;
 
 		private static TrayIconApplicationContext context;
 
@@ -60,7 +65,13 @@ namespace MonitorControl
 				ComponentResourceManager resources = new ComponentResourceManager(typeof(MainForm));
 				Icon icon = (Icon)resources.GetObject("$this.Icon");
 
-				context = new TrayIconApplicationContext(icon, Globals.AssemblyTitle + " " + Globals.AssemblyVersion, Context_CreateContextMenu, Context_DoubleClick);
+				TrayIconApplicationOptions options = new TrayIconApplicationOptions(icon);
+				options.tooltipText = Globals.AssemblyTitle + " " + Globals.AssemblyVersion;
+				options.onCreateContextMenu = Context_CreateContextMenu;
+				options.onDoubleClick = Context_DoubleClick;
+				options.ListenForDisplayStateChanges = true;
+				options.DisplayStateChanged += DisplayStateChanged;
+				context = new TrayIconApplicationContext(options);
 
 				Application.Run(context);
 			}
@@ -82,6 +93,11 @@ namespace MonitorControl
 				}
 				catch { }
 			}
+		}
+
+		private static void DisplayStateChanged(object sender, DisplayState state)
+		{
+			Logger.Info("Display state changed (notified by OS): " + state.ToString());
 		}
 
 		public static void Exit()
