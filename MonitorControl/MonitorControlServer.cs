@@ -324,22 +324,32 @@ namespace MonitorControl
 		}
 		public static void Off(bool mute)
 		{
-			UnmuteIfNeeded();
-
-			OffTracker.NotifyMonitorOff();
-			currentMonitorStatus = "off";
-			SetMonitorInState(2);
-			RunAdditionalCommandsInBackground(CommandSet.Off);
-
-			uint lastInputAge = LastInput.GetLastInputAgeMs();
+			Logger.Info("Monitors turning off (mute=" + mute + ").");
 			lock (myLock)
 			{
+				UnmuteIfNeeded();
+
 				didMute = false;
 				if (mute && !AudioManager.GetMasterVolumeMute())
 				{
+					// 2024 April, it was noticed that muting may cause the screens to immediately wake up, so now I mute before putting screens to sleep.
 					AudioManager.SetMasterVolumeMute(true);
 					didMute = true;
+					Thread.Sleep(5); // I hate that this is necessary.
 				}
+
+				OffTracker.NotifyMonitorOff();
+				currentMonitorStatus = "off";
+				SetMonitorInState(2);
+				RunAdditionalCommandsInBackground(CommandSet.Off);
+
+				//didMute = false;
+				//if (mute && !AudioManager.GetMasterVolumeMute())
+				//{
+				//	AudioManager.SetMasterVolumeMute(true);
+				//	didMute = true;
+				//}
+				uint lastInputAge = LastInput.GetLastInputAgeMs();
 				StopMonitorOffThread();
 				StopWaitForWakeThread();
 				StartWaitForWakeThread(new { lastInputAge });
@@ -446,11 +456,17 @@ namespace MonitorControl
 				uint lastInputAge = args.lastInputAge;
 				Stopwatch sleepTimer = Stopwatch.StartNew();
 				int timesToSetOff = 12;
+				bool inputDetected = false;
 				// In theory the last input counter will roll over after 49.7102696 days. Or maybe it'll just stop incrementing?  Either way, lets hope the PC doesn't stay idle that long.
 				while (true)
 				{
 					uint inputAge = LastInput.GetLastInputAgeMs();
-					if (inputAge < lastInputAge || currentMonitorStatus != "off")
+					if (inputAge < lastInputAge)
+					{
+						inputDetected = true;
+						break;
+					}
+					if (currentMonitorStatus != "off")
 						break;
 					lastInputAge = inputAge;
 					if (!OffTracker.DidExecuteDelayedOffCommands
@@ -469,6 +485,10 @@ namespace MonitorControl
 						timesToSetOff--;
 						SetMonitorInState(2);
 					}
+				}
+				if (inputDetected)
+				{
+					Logger.Info("Input detected. Assuming monitors are waking.");
 				}
 				bool doPartialWakeLogic = Program.settings.inputWakefulnessStrength > 1 && currentMonitorStatus == "off";
 				bool lastOffDidMute = didMute;
