@@ -19,19 +19,22 @@ namespace MonitorControl
 		private static object startupLock = new object();
 		private static bool Mute;
 		/// <summary>
+		/// <para>Begins the partial wake protocol.</para>
 		/// <para>After iterations where the user provides an input, wakefulness increases.</para>
 		/// <para>When the user does not provide an input, wakefulness decreases.</para>
 		/// <para>If wakefulness reaches 0, screens turn off.</para>
 		/// <para>If wakefulness reaches 1, screens stay on.</para>
 		/// </summary>
 		private static double Wakefulness;
-		public static void BeginPartialWakeState(bool mute, double wakefulness)
+		/// <summary>
+		/// Each partial wake thread will abort itself if its thread ID counter does not match this value.
+		/// </summary>
+		private static long LiveThreadId = 0;
+		public static void BeginPartialWake(bool mute, double wakefulness, string reason)
 		{
 			lock (startupLock)
 			{
-				abort = true;
-				partialWakeThread?.Join();
-				abort = false;
+				StopPartialWake();
 
 				Mute = mute;
 				Wakefulness = wakefulness.Clamp(0, 1);
@@ -39,8 +42,19 @@ namespace MonitorControl
 				partialWakeThread = new Thread(PartialWakeThreadLoop);
 				partialWakeThread.IsBackground = true;
 				partialWakeThread.Name = "Partial Wake Thread";
-				partialWakeThread.Start();
+				partialWakeThread.Start(new
+				{
+					myThreadId = Interlocked.Increment(ref LiveThreadId),
+					reason
+				});
 			}
+		}
+		/// <summary>
+		/// Stops the currently active partial wake protocol, if any.
+		/// </summary>
+		public static void StopPartialWake()
+		{
+			Interlocked.Increment(ref LiveThreadId);
 		}
 		/// <summary>
 		/// Amount of wakefulness that is lost per second (based on total seconds of wakefulness progress bar).
@@ -52,8 +66,16 @@ namespace MonitorControl
 				return 1.0 / (double)Program.settings.partialWakeMax;
 			}
 		}
-		private static void PartialWakeThreadLoop()
+		private static bool Abort(long myThreadId)
 		{
+			return Interlocked.Read(ref LiveThreadId) != myThreadId;
+		}
+		private static void PartialWakeThreadLoop(object arg)
+		{
+			dynamic args = arg;
+			Logger.Info("Partial wake thread starting (" + (string)args.reason + ")");
+			long myThreadId = args.myThreadId;
+
 			const int iterationInterval = 100;
 			int strength = Program.settings.inputWakefulnessStrength <= 0 ? 3 : Program.settings.inputWakefulnessStrength.Clamp(1, 10);
 			double wakefulnessGainPerInput = strength * 0.0125;
@@ -77,7 +99,7 @@ namespace MonitorControl
 
 
 				double wakefulnessLossPerInterval = wakefulnessLossPerSecond * (iterationInterval / 1000.0);
-				while (!abort && Wakefulness > 0 && Wakefulness < 1)
+				while (!Abort(myThreadId) && Wakefulness > 0 && Wakefulness < 1)
 				{
 					int secondsRemaining = (int)(Wakefulness / wakefulnessLossPerSecond);
 					int Progress = (int)Math.Round(Wakefulness * 100);
@@ -95,8 +117,24 @@ namespace MonitorControl
 					else
 						Wakefulness -= wakefulnessLossPerInterval;
 				}
+				bool abort = Abort(myThreadId);
 				if (!abort && Wakefulness <= 0)
+				{
+					Logger.Info("Partial wake thread is turning off monitors due to inactivity.");
 					MonitorControlServer.Off(Mute);
+				}
+				else if (Wakefulness >= 1)
+				{
+					Logger.Info("Partial wake thread is allowing monitors to stay awake due to continued user input.");
+				}
+				else if (abort)
+				{
+					Logger.Info("Partial wake thread was commanded to stop early and will take no further action.");
+				}
+				else
+				{
+					Logger.Info("Partial wake thread is exiting for an unhandled reason.");
+				}
 			}
 			catch (Exception ex)
 			{

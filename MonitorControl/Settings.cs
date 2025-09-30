@@ -45,6 +45,10 @@ namespace MonitorControl
 		/// </summary>
 		public bool syncAllowLocalOverride = false;
 		/// <summary>
+		/// (0 for "never time out") (negative to load the value from the OS upon next app startup).  This is the number of idle seconds before the OS turns the monitor off.
+		/// </summary>
+		public long displayIdleTimeoutSeconds = -1;
+		/// <summary>
 		/// Commands to run when turning off monitors (one command per line).
 		/// </summary>
 		public string commandsOff = "";

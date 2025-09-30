@@ -10,20 +10,38 @@ using System.Threading;
 using System.Web;
 using System.Windows.Forms;
 using BPUtil;
+using BPUtil.Forms;
 using BPUtil.NativeWin;
 using BPUtil.NativeWin.AudioController;
 using BPUtil.SimpleHttp;
+using MonitorControl.Properties;
 
 namespace MonitorControl
 {
 	public class MonitorControlServer : HttpServer
 	{
+		private static CountdownStopwatch preventPartialWakeUntilFinished = null;
 		private static Thread MonitorOffTimerThread;
-		private static Thread thrWaitForWake;
 		/// <summary>
 		/// A string that is either "on" or "off".
 		/// </summary>
-		public static string currentMonitorStatus { get; private set; } = "on";
+		public static string currentMonitorStatus
+		{
+			get
+			{
+				switch (Program.CurrentDisplayState)
+				{
+					case DisplayState.Unknown:
+					case DisplayState.On:
+					case DisplayState.Dimmed:
+						return "on";
+					case DisplayState.Off:
+						return "off";
+					default:
+						throw new Exception("Current display state is unrecognized: " + Program.CurrentDisplayState);
+				}
+			}
+		}
 		private static object myLock = new object();
 		private static bool didMute = false;
 		public MonitorControlServer(X509Certificate2 cert = null) : base(cert == null ? null : new SimpleCertificateSelector(cert))
@@ -42,10 +60,12 @@ namespace MonitorControl
 				string successMessage = "<div>" + p.Request.Page + " command successful</div>";
 				if (p.Request.Page == "on")
 				{
+					Logger.Info("Web command \"" + p.Request.Url.PathAndQuery + "\"");
 					On(p);
 				}
 				else if (p.Request.Page == "off")
 				{
+					Logger.Info("Web command \"" + p.Request.Url.PathAndQuery + "\"");
 					double partialwake = p.Request.GetDoubleParam("partialwake", 0).Clamp(0, 1);
 					int idleTimeMs = p.Request.GetIntParam("ifidle", 0);
 					int delayMs = p.Request.GetIntParam("delay", 0);
@@ -54,7 +74,7 @@ namespace MonitorControl
 					{
 						if (partialwake > 0)
 						{
-							PartialWakeController.BeginPartialWakeState(mute, partialwake);
+							PartialWakeController.BeginPartialWake(mute, partialwake, "web \"off\" command specified partialwake=" + partialwake);
 						}
 						else
 						{
@@ -77,8 +97,6 @@ namespace MonitorControl
 				}
 				else if (p.Request.Page == "standby")
 				{
-					OffTracker.NotifyMonitorOff();
-					currentMonitorStatus = "off";
 					SetMonitorInState(1);
 					RunAdditionalCommandsInBackground(CommandSet.Off);
 				}
@@ -94,12 +112,14 @@ namespace MonitorControl
 				}
 				else if (p.Request.Page == "smarttoggle")
 				{
+					Logger.Info("Web command \"" + p.Request.Url.PathAndQuery + "\"");
 					if (currentMonitorStatus == "on")
 					{
 						OffIfIdle(Program.settings.idleTimeMs, p.Request.GetBoolParam("mute"));
 					}
 					else
 					{
+						Logger.Info("Turning on monitors via web \"smarttoggle\" command.");
 						On(p);
 					}
 				}
@@ -243,6 +263,26 @@ namespace MonitorControl
 						p.Response.FullResponseUTF8(ex.Message, "text/plain; charset=utf-8", "500 Internal Server Error");
 					}
 				}
+				else if (p.Request.Page == "log")
+				{
+					uint n = (uint)p.Request.GetIntParam("n", 0); // number of lines
+					if (n > 0)
+					{
+						using (StreamingLogReader2 reader = new StreamingLogReader2(n))
+						{
+							StringBuilder sb = new StringBuilder();
+							reader.ReadInto(sb);
+							p.Response.FullResponseUTF8(sb.ToString(), "text/plain; charset=utf-8");
+						}
+					}
+					else
+					{
+						p.Response.StaticFile(Globals.ErrorFilePath);
+					}
+				}
+				else if (p.Request.Page == "log100")
+				{
+				}
 				else
 					successMessage = "";
 
@@ -307,6 +347,9 @@ namespace MonitorControl
 						+ BuildRow("SetDisplayIdleTimeout?seconds=300", "Sets the display idle timeout in the current OS power profile, to 300 seconds (5 minutes).")
 						+ BuildRow("SetDisplayIdleTimeout?seconds=600", "Sets the display idle timeout in the current OS power profile, to 600 seconds (10 minutes).")
 						+ BuildRow("SetDisplayIdleTimeout?seconds=900", "Sets the display idle timeout in the current OS power profile, to 900 seconds (15 minutes).")
+						+ BuildRow("log?n=10", "Returns the last 10 lines from the log file.")
+						+ BuildRow("log?n=25", "Returns the last 25 lines from the log file.")
+						+ BuildRow("log?n=100", "Returns the last 100 lines from the log file.")
 						+ "</tbody>"
 						+ "</table>"
 						+ "</body>"
@@ -341,15 +384,15 @@ namespace MonitorControl
 
 		public static void On(HttpProcessor p)
 		{
+			preventPartialWakeUntilFinished = CountdownStopwatch.StartNew(TimeSpan.FromSeconds(10));
+			PartialWakeController.StopPartialWake();
 			UnmuteIfNeeded();
-			OffTracker.NotifyMonitorOn();
-			currentMonitorStatus = "on";
 			SetMonitorInState(-1);
 			RunAdditionalCommandsInBackground(CommandSet.On);
 			lock (myLock)
 			{
 				StopMonitorOffThread();
-				StopWaitForWakeThread();
+				CancelDelayedOffCommands();
 				if (p != null)
 				{
 					int offAfterSecs = p.Request.GetIntParam("offAfterSecs", 0);
@@ -380,7 +423,9 @@ namespace MonitorControl
 		}
 		public static void Off(bool mute)
 		{
-			Logger.Info("Monitors turning off (mute=" + mute + ").");
+			preventPartialWakeUntilFinished = null;
+			Logger.Info("Turning off monitors" + (mute ? " and muting audio" : "") + ".");
+			PartialWakeController.StopPartialWake();
 			lock (myLock)
 			{
 				UnmuteIfNeeded();
@@ -394,8 +439,6 @@ namespace MonitorControl
 					Thread.Sleep(5); // I hate that this is necessary.
 				}
 
-				OffTracker.NotifyMonitorOff();
-				currentMonitorStatus = "off";
 				SetMonitorInState(2);
 				RunAdditionalCommandsInBackground(CommandSet.Off);
 
@@ -407,8 +450,6 @@ namespace MonitorControl
 				//}
 				uint lastInputAge = LastInput.GetLastInputAgeMs();
 				StopMonitorOffThread();
-				StopWaitForWakeThread();
-				StartWaitForWakeThread(new { lastInputAge });
 			}
 		}
 
@@ -429,8 +470,9 @@ namespace MonitorControl
 		protected override void stopServer()
 		{
 			UnmuteIfNeeded();
+			RestorePreferredMonitorIdleTimeout();
 			StopMonitorOffThread();
-			StopWaitForWakeThread();
+			CancelDelayedOffCommands();
 		}
 
 		private static void StopMonitorOffThread()
@@ -465,8 +507,6 @@ namespace MonitorControl
 			try
 			{
 				Thread.Sleep((int)arg * 1000);
-				OffTracker.NotifyMonitorOff();
-				currentMonitorStatus = "off";
 				SetMonitorInState(2);
 				RunAdditionalCommandsInBackground(CommandSet.Off);
 			}
@@ -478,95 +518,67 @@ namespace MonitorControl
 				Logger.Debug(ex);
 			}
 		}
-		private static void StopWaitForWakeThread()
+		private static void CancelDelayedOffCommands()
 		{
-			try
-			{
-				if (thrWaitForWake != null && thrWaitForWake.IsAlive)
-					thrWaitForWake.Abort();
-			}
-			catch (Exception ex)
-			{
-				Logger.Debug(ex);
-			}
+			delayedOffCommandsHandle?.Cancel();
 		}
-		private static void StartWaitForWakeThread(object arg)
-		{
-			try
-			{
-				thrWaitForWake = new Thread(WaitForWakeProcedure);
-				thrWaitForWake.IsBackground = true;
-				thrWaitForWake.Name = "Wait for wake";
-				thrWaitForWake.Start(arg);
-			}
-			catch (Exception ex)
-			{
-				Logger.Debug(ex);
-			}
-		}
-		private static void WaitForWakeProcedure(object arg)
-		{
-			try
-			{
-				dynamic args = arg;
-				uint lastInputAge = args.lastInputAge;
-				Stopwatch sleepTimer = Stopwatch.StartNew();
-				int timesToSetOff = 12;
-				bool inputDetected = false;
-				// In theory the last input counter will roll over after 49.7102696 days. Or maybe it'll just stop incrementing?  Either way, lets hope the PC doesn't stay idle that long.
-				while (true)
-				{
-					uint inputAge = LastInput.GetLastInputAgeMs();
-					if (inputAge < lastInputAge)
-					{
-						inputDetected = true;
-						break;
-					}
-					if (currentMonitorStatus != "off")
-						break;
-					lastInputAge = inputAge;
-					if (!OffTracker.DidExecuteDelayedOffCommands
-						&& (
-						/*inputAge > OffTracker.DelayedOffCommandsDelayMs ||*/
-						OffTracker.TimeSinceMonitorsTurnedOff > OffTracker.DelayedOffCommandsDelayMs
-						))
-					{
-						RunAdditionalCommandsInBackground(CommandSet.OffAfterDelay);
-						OffTracker.NotifyExecutedDelayedOffCommands();
-					}
-					Thread.Sleep(1000);
-					if (timesToSetOff > 0 && sleepTimer.ElapsedMilliseconds >= 5000)
-					{
-						sleepTimer.Restart();
-						timesToSetOff--;
-						SetMonitorInState(2);
-					}
-				}
-				if (inputDetected)
-				{
-					Logger.Info("Input detected. Assuming monitors are waking.");
-				}
-				bool doPartialWakeLogic = Program.settings.inputWakefulnessStrength > 1 && currentMonitorStatus == "off";
-				bool lastOffDidMute = didMute;
 
-				currentMonitorStatus = "on";
-				RunAdditionalCommandsInBackground(CommandSet.On);
-				UnmuteIfNeeded();
+		private static SetTimeout.TimeoutHandle delayedOffCommandsHandle = null;
+		private static DisplayState previousDisplayState = DisplayState.Unknown;
+		public static void DisplayStateChanged(object sender, DisplayState state)
+		{
+			Logger.Info("! Display state " + previousDisplayState + " -> " + state.ToString());
+
+			if (state == DisplayState.Off)
+			{
+				OffTracker.NotifyMonitorOff();
+				if (previousDisplayState == DisplayState.On || previousDisplayState == DisplayState.Dimmed)
+				{
+					// If I have trouble with monitors waking on their own again, I could try setting the monitor timeout to a small value here.
+					//WinSleep.SetMonitorTimeoutSeconds_AC(5);
+					CancelDelayedOffCommands();
+					delayedOffCommandsHandle = SetTimeout.OnBackground(RunDelayedOffComandsIfDisplaysAreOff, (int)OffTracker.DelayedOffCommandsDelayMs);
+				}
+			}
+			else if (state == DisplayState.On || state == DisplayState.Dimmed)
+			{
+				RestorePreferredMonitorIdleTimeout();
+				CancelDelayedOffCommands();
 				OffTracker.NotifyMonitorOn();
-
-				if (doPartialWakeLogic)
+				if (previousDisplayState == DisplayState.Off)
 				{
-					// Shows the partial wake dialog which begins a countdown.
-					// If the user provides sufficient input before the countdown expires, the screens stay awake.  Otherwise, the screens are turned off.
-					PartialWakeController.BeginPartialWakeState(lastOffDidMute, (double)Program.settings.partialWakeStart / (double)Program.settings.partialWakeMax);
+					NotifyMonitorsTurnedOnFromOffState();
 				}
 			}
-			catch (ThreadAbortException)
+
+			previousDisplayState = state;
+		}
+
+		private static void RunDelayedOffComandsIfDisplaysAreOff()
+		{
+			if (!OffTracker.DidExecuteDelayedOffCommands && Program.CurrentDisplayState == DisplayState.Off)
 			{
+				RunAdditionalCommandsInBackground(CommandSet.OffAfterDelay);
+				OffTracker.NotifyExecutedDelayedOffCommands();
 			}
-			catch (Exception ex)
+		}
+
+		private static void NotifyMonitorsTurnedOnFromOffState()
+		{
+			bool doPartialWakeLogic = Program.settings.inputWakefulnessStrength > 1;
+			if (preventPartialWakeUntilFinished?.Finished == false) // If the timer exists and is not elapsed, then suppress partial wake behavior.
+				doPartialWakeLogic = false;
+
+			bool lastOffDidMute = didMute;
+
+			RunAdditionalCommandsInBackground(CommandSet.On);
+			UnmuteIfNeeded();
+
+			if (doPartialWakeLogic)
 			{
-				Logger.Debug(ex);
+				// Shows the partial wake dialog which begins a countdown.
+				// If the user provides sufficient input before the countdown expires, the screens stay awake.  Otherwise, the screens are turned off.
+				PartialWakeController.BeginPartialWake(lastOffDidMute, (double)Program.settings.partialWakeStart / (double)Program.settings.partialWakeMax, "displays were just woken");
 			}
 		}
 
@@ -601,6 +613,12 @@ namespace MonitorControl
 						.Select(cmd => cmd.Trim())
 						.Where(cmd => !cmd.StartsWith("#"))
 						.ToArray();
+
+					if (commands.Length > 0)
+					{
+						Logger.Info("Running command set [" + commandSet.ToString() + "], which is " + commands.Length + " commands.");
+					}
+
 					//List<ProcessRunnerHandle> processes = new List<ProcessRunnerHandle>();
 					foreach (string cmdRaw in commands)
 					{
@@ -644,6 +662,22 @@ namespace MonitorControl
 			}, 0);
 		}
 
+		/// <summary>
+		/// Sets the monitor idle timeout (in Windows power settings, current profile) to the preferred value from this program's settings.
+		/// </summary>
+		public static void RestorePreferredMonitorIdleTimeout()
+		{
+			if (Program.settings.displayIdleTimeoutSeconds >= 0
+				&& Program.settings.displayIdleTimeoutSeconds != WinSleep.GetMonitorTimeoutSeconds_AC())
+			{
+				WinSleep.SetMonitorTimeoutSeconds_AC((uint)Program.settings.displayIdleTimeoutSeconds.Clamp(0, uint.MaxValue));
+			}
+		}
+
+		/// <summary>
+		/// Sets the "MonitorInState" value.
+		/// </summary>
+		/// <param name="state">-1 for "on", 1 for "sleep", 2 for "off".  The only value that really works reliably is 2 for "off".</param>
 		private static void SetMonitorInState(int state)
 		{
 			Console.WriteLine("MonitorInState: " + state);

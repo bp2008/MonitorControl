@@ -13,7 +13,7 @@ namespace MonitorControl
 	public static class OffTracker
 	{
 		private static Stopwatch swUptime = Stopwatch.StartNew();
-		private static long? timeOfLastMonitorOffCommandFromUser = null;
+		private static long? timeOfLastMonitorOffEvent = null;
 		/// <summary>
 		/// Gets the number of milliseconds to wait before executing delayed off commands.
 		/// </summary>
@@ -30,17 +30,20 @@ namespace MonitorControl
 		/// </summary>
 		public static void NotifyMonitorOff()
 		{
-			if (timeOfLastMonitorOffCommandFromUser == null)
-				timeOfLastMonitorOffCommandFromUser = swUptime.ElapsedMilliseconds;
+			if (timeOfLastMonitorOffEvent == null)
+				timeOfLastMonitorOffEvent = swUptime.ElapsedMilliseconds;
 		}
 		/// <summary>
 		/// Call when the system enters "full wake" mode.
 		/// </summary>
 		public static void NotifyMonitorOn()
 		{
-			timeOfLastMonitorOffCommandFromUser = null;
+			timeOfLastMonitorOffEvent = null;
 			DidExecuteDelayedOffCommands = false;
 		}
+		/// <summary>
+		/// Call when the delayed off commands have been executed.
+		/// </summary>
 		public static void NotifyExecutedDelayedOffCommands()
 		{
 			DidExecuteDelayedOffCommands = true;
@@ -52,7 +55,7 @@ namespace MonitorControl
 		{
 			get
 			{
-				long? last = timeOfLastMonitorOffCommandFromUser;
+				long? last = timeOfLastMonitorOffEvent;
 				if (last == null)
 					return 0;
 				else

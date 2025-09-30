@@ -237,11 +237,11 @@ namespace MonitorControl
 				{
 					if (hotkey.Action == ActionType.MonitorsOff)
 					{
-						PartialWakeController.BeginPartialWakeState(false, hotkeySleepStartingWakefulness);
+						PartialWakeController.BeginPartialWake(false, hotkeySleepStartingWakefulness, "hotkey MonitorsOff");
 					}
 					else if (hotkey.Action == ActionType.MonitorsOffAndMute)
 					{
-						PartialWakeController.BeginPartialWakeState(true, hotkeySleepStartingWakefulness);
+						PartialWakeController.BeginPartialWake(true, hotkeySleepStartingWakefulness, "hotkey MonitorsOffAndMute");
 					}
 					else if (hotkey.Action == ActionType.Mute)
 					{

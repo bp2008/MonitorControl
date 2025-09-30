@@ -66,6 +66,8 @@
 			this.label16 = new System.Windows.Forms.Label();
 			this.label17 = new System.Windows.Forms.Label();
 			this.nudProgressBarStart = new System.Windows.Forms.NumericUpDown();
+			this.label18 = new System.Windows.Forms.Label();
+			this.nudDisplayIdleTimeout = new System.Windows.Forms.NumericUpDown();
 			this.btnOpenDataFolder = new System.Windows.Forms.Button();
 			this.btnOpenWebInterface = new System.Windows.Forms.Button();
 			this.cbStartAutomatically = new System.Windows.Forms.CheckBox();
@@ -82,6 +84,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.nudInputWakefulnessStrength)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudProgressBarLength)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudProgressBarStart)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.nudDisplayIdleTimeout)).BeginInit();
 			this.groupBox1.SuspendLayout();
 			this.groupBox2.SuspendLayout();
 			this.groupBox3.SuspendLayout();
@@ -102,7 +105,7 @@
 			// nudHttpPort
 			// 
 			this.nudHttpPort.Location = new System.Drawing.Point(97, 30);
-			this.nudHttpPort.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.nudHttpPort.Margin = new System.Windows.Forms.Padding(4);
 			this.nudHttpPort.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -123,7 +126,7 @@
 			// nudHttpsPort
 			// 
 			this.nudHttpsPort.Location = new System.Drawing.Point(319, 30);
-			this.nudHttpsPort.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.nudHttpsPort.Margin = new System.Windows.Forms.Padding(4);
 			this.nudHttpsPort.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -168,7 +171,7 @@
 			// nudIdleMs
 			// 
 			this.nudIdleMs.Location = new System.Drawing.Point(97, 84);
-			this.nudIdleMs.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.nudIdleMs.Margin = new System.Windows.Forms.Padding(4);
 			this.nudIdleMs.Maximum = new decimal(new int[] {
             3600000,
             0,
@@ -214,7 +217,7 @@
 			// label5
 			// 
 			this.label5.AutoSize = true;
-			this.label5.Location = new System.Drawing.Point(16, 450);
+			this.label5.Location = new System.Drawing.Point(16, 486);
 			this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
 			this.label5.Name = "label5";
 			this.label5.Size = new System.Drawing.Size(126, 16);
@@ -224,8 +227,8 @@
 			// 
 			// txtIpWhitelist
 			// 
-			this.txtIpWhitelist.Location = new System.Drawing.Point(16, 470);
-			this.txtIpWhitelist.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.txtIpWhitelist.Location = new System.Drawing.Point(16, 506);
+			this.txtIpWhitelist.Margin = new System.Windows.Forms.Padding(4);
 			this.txtIpWhitelist.Multiline = true;
 			this.txtIpWhitelist.Name = "txtIpWhitelist";
 			this.txtIpWhitelist.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -238,8 +241,8 @@
 			// 
 			this.btnExitProgram.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
 			this.btnExitProgram.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(192)))), ((int)(((byte)(192)))));
-			this.btnExitProgram.Location = new System.Drawing.Point(731, 633);
-			this.btnExitProgram.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.btnExitProgram.Location = new System.Drawing.Point(731, 661);
+			this.btnExitProgram.Margin = new System.Windows.Forms.Padding(4);
 			this.btnExitProgram.Name = "btnExitProgram";
 			this.btnExitProgram.Size = new System.Drawing.Size(195, 28);
 			this.btnExitProgram.TabIndex = 92;
@@ -275,7 +278,7 @@
 			// nudSyncPort
 			// 
 			this.nudSyncPort.Location = new System.Drawing.Point(319, 25);
-			this.nudSyncPort.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.nudSyncPort.Margin = new System.Windows.Forms.Padding(4);
 			this.nudSyncPort.Maximum = new decimal(new int[] {
             65535,
             0,
@@ -300,7 +303,7 @@
 			// txtSyncAddress
 			// 
 			this.txtSyncAddress.Location = new System.Drawing.Point(80, 23);
-			this.txtSyncAddress.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.txtSyncAddress.Margin = new System.Windows.Forms.Padding(4);
 			this.txtSyncAddress.Name = "txtSyncAddress";
 			this.txtSyncAddress.Size = new System.Drawing.Size(183, 22);
 			this.txtSyncAddress.TabIndex = 41;
@@ -312,7 +315,7 @@
 			// 
 			this.cbSyncHTTPS.AutoSize = true;
 			this.cbSyncHTTPS.Location = new System.Drawing.Point(319, 58);
-			this.cbSyncHTTPS.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.cbSyncHTTPS.Margin = new System.Windows.Forms.Padding(4);
 			this.cbSyncHTTPS.Name = "cbSyncHTTPS";
 			this.cbSyncHTTPS.Size = new System.Drawing.Size(75, 20);
 			this.cbSyncHTTPS.TabIndex = 44;
@@ -330,7 +333,7 @@
             "Turn Off",
             "Turn On"});
 			this.ddlSyncFailureAction.Location = new System.Drawing.Point(109, 55);
-			this.ddlSyncFailureAction.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.ddlSyncFailureAction.Margin = new System.Windows.Forms.Padding(4);
 			this.ddlSyncFailureAction.Name = "ddlSyncFailureAction";
 			this.ddlSyncFailureAction.Size = new System.Drawing.Size(160, 24);
 			this.ddlSyncFailureAction.TabIndex = 43;
@@ -352,7 +355,7 @@
 			// 
 			this.cbSyncMuteWhenOff.AutoSize = true;
 			this.cbSyncMuteWhenOff.Location = new System.Drawing.Point(8, 89);
-			this.cbSyncMuteWhenOff.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.cbSyncMuteWhenOff.Margin = new System.Windows.Forms.Padding(4);
 			this.cbSyncMuteWhenOff.Name = "cbSyncMuteWhenOff";
 			this.cbSyncMuteWhenOff.Size = new System.Drawing.Size(242, 20);
 			this.cbSyncMuteWhenOff.TabIndex = 45;
@@ -366,7 +369,7 @@
 			// 
 			this.cbAllowLocalOverride.AutoSize = true;
 			this.cbAllowLocalOverride.Location = new System.Drawing.Point(8, 117);
-			this.cbAllowLocalOverride.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.cbAllowLocalOverride.Margin = new System.Windows.Forms.Padding(4);
 			this.cbAllowLocalOverride.Name = "cbAllowLocalOverride";
 			this.cbAllowLocalOverride.Size = new System.Drawing.Size(270, 20);
 			this.cbAllowLocalOverride.TabIndex = 46;
@@ -380,7 +383,7 @@
 			// nudInputWakefulnessStrength
 			// 
 			this.nudInputWakefulnessStrength.Location = new System.Drawing.Point(200, 87);
-			this.nudInputWakefulnessStrength.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.nudInputWakefulnessStrength.Margin = new System.Windows.Forms.Padding(4);
 			this.nudInputWakefulnessStrength.Maximum = new decimal(new int[] {
             10,
             0,
@@ -413,10 +416,10 @@
 			// txtCommandsOn
 			// 
 			this.txtCommandsOn.Location = new System.Drawing.Point(451, 439);
-			this.txtCommandsOn.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.txtCommandsOn.Margin = new System.Windows.Forms.Padding(4);
 			this.txtCommandsOn.Multiline = true;
 			this.txtCommandsOn.Name = "txtCommandsOn";
-			this.txtCommandsOn.Size = new System.Drawing.Size(477, 178);
+			this.txtCommandsOn.Size = new System.Drawing.Size(477, 214);
 			this.txtCommandsOn.TabIndex = 80;
 			this.toolTip1.SetToolTip(this.txtCommandsOn, resources.GetString("txtCommandsOn.ToolTip"));
 			this.txtCommandsOn.TextChanged += new System.EventHandler(this.txtCommandsOn_TextChanged);
@@ -424,7 +427,7 @@
 			// txtCommandsOff
 			// 
 			this.txtCommandsOff.Location = new System.Drawing.Point(447, 38);
-			this.txtCommandsOff.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.txtCommandsOff.Margin = new System.Windows.Forms.Padding(4);
 			this.txtCommandsOff.Multiline = true;
 			this.txtCommandsOff.Name = "txtCommandsOff";
 			this.txtCommandsOff.Size = new System.Drawing.Size(477, 168);
@@ -468,7 +471,7 @@
 			// txtCommandsOffAfterDelay
 			// 
 			this.txtCommandsOffAfterDelay.Location = new System.Drawing.Point(451, 254);
-			this.txtCommandsOffAfterDelay.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.txtCommandsOffAfterDelay.Margin = new System.Windows.Forms.Padding(4);
 			this.txtCommandsOffAfterDelay.Multiline = true;
 			this.txtCommandsOffAfterDelay.Name = "txtCommandsOffAfterDelay";
 			this.txtCommandsOffAfterDelay.Size = new System.Drawing.Size(477, 162);
@@ -513,7 +516,7 @@
 			// nudProgressBarLength
 			// 
 			this.nudProgressBarLength.Location = new System.Drawing.Point(159, 23);
-			this.nudProgressBarLength.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.nudProgressBarLength.Margin = new System.Windows.Forms.Padding(4);
 			this.nudProgressBarLength.Maximum = new decimal(new int[] {
             60,
             0,
@@ -564,7 +567,7 @@
 			// nudProgressBarStart
 			// 
 			this.nudProgressBarStart.Location = new System.Drawing.Point(159, 55);
-			this.nudProgressBarStart.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.nudProgressBarStart.Margin = new System.Windows.Forms.Padding(4);
 			this.nudProgressBarStart.Maximum = new decimal(new int[] {
             59,
             0,
@@ -588,11 +591,35 @@
             0});
 			this.nudProgressBarStart.ValueChanged += new System.EventHandler(this.nudProgressBarStart_ValueChanged);
 			// 
+			// label18
+			// 
+			this.label18.AutoSize = true;
+			this.label18.Location = new System.Drawing.Point(16, 451);
+			this.label18.Name = "label18";
+			this.label18.Size = new System.Drawing.Size(193, 16);
+			this.label18.TabIndex = 102;
+			this.label18.Text = "Turn off display after (seconds):";
+			this.toolTip1.SetToolTip(this.label18, resources.GetString("label18.ToolTip"));
+			// 
+			// nudDisplayIdleTimeout
+			// 
+			this.nudDisplayIdleTimeout.Location = new System.Drawing.Point(223, 449);
+			this.nudDisplayIdleTimeout.Maximum = new decimal(new int[] {
+            -1,
+            0,
+            0,
+            0});
+			this.nudDisplayIdleTimeout.Name = "nudDisplayIdleTimeout";
+			this.nudDisplayIdleTimeout.Size = new System.Drawing.Size(110, 22);
+			this.nudDisplayIdleTimeout.TabIndex = 103;
+			this.toolTip1.SetToolTip(this.nudDisplayIdleTimeout, resources.GetString("nudDisplayIdleTimeout.ToolTip"));
+			this.nudDisplayIdleTimeout.ValueChanged += new System.EventHandler(this.nudDisplayIdleTimeout_ValueChanged);
+			// 
 			// btnOpenDataFolder
 			// 
 			this.btnOpenDataFolder.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.btnOpenDataFolder.Location = new System.Drawing.Point(16, 633);
-			this.btnOpenDataFolder.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.btnOpenDataFolder.Location = new System.Drawing.Point(16, 661);
+			this.btnOpenDataFolder.Margin = new System.Windows.Forms.Padding(4);
 			this.btnOpenDataFolder.Name = "btnOpenDataFolder";
 			this.btnOpenDataFolder.Size = new System.Drawing.Size(195, 28);
 			this.btnOpenDataFolder.TabIndex = 90;
@@ -603,8 +630,8 @@
 			// btnOpenWebInterface
 			// 
 			this.btnOpenWebInterface.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.btnOpenWebInterface.Location = new System.Drawing.Point(16, 668);
-			this.btnOpenWebInterface.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.btnOpenWebInterface.Location = new System.Drawing.Point(16, 696);
+			this.btnOpenWebInterface.Margin = new System.Windows.Forms.Padding(4);
 			this.btnOpenWebInterface.Name = "btnOpenWebInterface";
 			this.btnOpenWebInterface.Size = new System.Drawing.Size(195, 28);
 			this.btnOpenWebInterface.TabIndex = 100;
@@ -616,7 +643,7 @@
 			// 
 			this.cbStartAutomatically.AutoSize = true;
 			this.cbStartAutomatically.Location = new System.Drawing.Point(20, 15);
-			this.cbStartAutomatically.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.cbStartAutomatically.Margin = new System.Windows.Forms.Padding(4);
 			this.cbStartAutomatically.Name = "cbStartAutomatically";
 			this.cbStartAutomatically.Size = new System.Drawing.Size(194, 20);
 			this.cbStartAutomatically.TabIndex = 1;
@@ -627,8 +654,8 @@
 			// btnOK
 			// 
 			this.btnOK.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-			this.btnOK.Location = new System.Drawing.Point(731, 668);
-			this.btnOK.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.btnOK.Location = new System.Drawing.Point(731, 696);
+			this.btnOK.Margin = new System.Windows.Forms.Padding(4);
 			this.btnOK.Name = "btnOK";
 			this.btnOK.Size = new System.Drawing.Size(195, 28);
 			this.btnOK.TabIndex = 101;
@@ -648,9 +675,9 @@
 			this.groupBox1.Controls.Add(this.nudSyncPort);
 			this.groupBox1.Controls.Add(this.label8);
 			this.groupBox1.Location = new System.Drawing.Point(16, 298);
-			this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.groupBox1.Margin = new System.Windows.Forms.Padding(4);
 			this.groupBox1.Name = "groupBox1";
-			this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.groupBox1.Padding = new System.Windows.Forms.Padding(4);
 			this.groupBox1.Size = new System.Drawing.Size(423, 149);
 			this.groupBox1.TabIndex = 40;
 			this.groupBox1.TabStop = false;
@@ -659,8 +686,8 @@
 			// btnManageHotkeys
 			// 
 			this.btnManageHotkeys.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-			this.btnManageHotkeys.Location = new System.Drawing.Point(223, 633);
-			this.btnManageHotkeys.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.btnManageHotkeys.Location = new System.Drawing.Point(223, 661);
+			this.btnManageHotkeys.Margin = new System.Windows.Forms.Padding(4);
 			this.btnManageHotkeys.Name = "btnManageHotkeys";
 			this.btnManageHotkeys.Size = new System.Drawing.Size(195, 28);
 			this.btnManageHotkeys.TabIndex = 91;
@@ -681,9 +708,9 @@
 			this.groupBox2.Controls.Add(this.label9);
 			this.groupBox2.Controls.Add(this.nudInputWakefulnessStrength);
 			this.groupBox2.Location = new System.Drawing.Point(16, 166);
-			this.groupBox2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.groupBox2.Margin = new System.Windows.Forms.Padding(4);
 			this.groupBox2.Name = "groupBox2";
-			this.groupBox2.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.groupBox2.Padding = new System.Windows.Forms.Padding(4);
 			this.groupBox2.Size = new System.Drawing.Size(423, 124);
 			this.groupBox2.TabIndex = 30;
 			this.groupBox2.TabStop = false;
@@ -701,9 +728,9 @@
 			this.groupBox3.Controls.Add(this.label3);
 			this.groupBox3.Controls.Add(this.label4);
 			this.groupBox3.Location = new System.Drawing.Point(16, 43);
-			this.groupBox3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.groupBox3.Margin = new System.Windows.Forms.Padding(4);
 			this.groupBox3.Name = "groupBox3";
-			this.groupBox3.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.groupBox3.Padding = new System.Windows.Forms.Padding(4);
 			this.groupBox3.Size = new System.Drawing.Size(423, 116);
 			this.groupBox3.TabIndex = 20;
 			this.groupBox3.TabStop = false;
@@ -713,7 +740,7 @@
 			// 
 			this.cbLogRequests.AutoSize = true;
 			this.cbLogRequests.Location = new System.Drawing.Point(292, 85);
-			this.cbLogRequests.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.cbLogRequests.Margin = new System.Windows.Forms.Padding(4);
 			this.cbLogRequests.Name = "cbLogRequests";
 			this.cbLogRequests.Size = new System.Drawing.Size(113, 20);
 			this.cbLogRequests.TabIndex = 24;
@@ -725,7 +752,9 @@
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(941, 711);
+			this.ClientSize = new System.Drawing.Size(941, 739);
+			this.Controls.Add(this.nudDisplayIdleTimeout);
+			this.Controls.Add(this.label18);
 			this.Controls.Add(this.groupBox3);
 			this.Controls.Add(this.btnManageHotkeys);
 			this.Controls.Add(this.label13);
@@ -745,7 +774,7 @@
 			this.Controls.Add(this.groupBox2);
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-			this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+			this.Margin = new System.Windows.Forms.Padding(4);
 			this.Name = "MainForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "MonitorControl";
@@ -758,6 +787,7 @@
 			((System.ComponentModel.ISupportInitialize)(this.nudInputWakefulnessStrength)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudProgressBarLength)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudProgressBarStart)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.nudDisplayIdleTimeout)).EndInit();
 			this.groupBox1.ResumeLayout(false);
 			this.groupBox1.PerformLayout();
 			this.groupBox2.ResumeLayout(false);
@@ -816,6 +846,8 @@
 		private System.Windows.Forms.Label label15;
 		private System.Windows.Forms.NumericUpDown nudProgressBarLength;
 		private System.Windows.Forms.CheckBox cbLogRequests;
+		private System.Windows.Forms.Label label18;
+		private System.Windows.Forms.NumericUpDown nudDisplayIdleTimeout;
 	}
 }
 

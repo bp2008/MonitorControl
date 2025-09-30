@@ -44,6 +44,19 @@ namespace MonitorControl
 
 				settings = new Settings();
 				settings.Load();
+				if (settings.displayIdleTimeoutSeconds < 0)
+				{
+					try
+					{
+						settings.displayIdleTimeoutSeconds = WinSleep.GetMonitorTimeoutSeconds_AC();
+					}
+					catch (Exception ex)
+					{
+						Logger.Info("Error loading preferred monitor idle timeout value from OS: " + ex.Message);
+					}
+					if (settings.displayIdleTimeoutSeconds >= 0)
+						settings.Save();
+				}
 				settings.SaveIfNoExist();
 
 				Application.EnableVisualStyles();
@@ -59,7 +72,16 @@ namespace MonitorControl
 				}
 
 				service = new MonitorControlService();
+				try
+				{
+					MonitorControlServer.RestorePreferredMonitorIdleTimeout();
+				}
+				catch (Exception ex)
+				{
+					Logger.Info("Error accessing monitor idle timeout setting in OS power settings: " + ex.Message);
+				}
 				service.Start();
+
 
 				// Optionally, one could add the icon to Project > Properties > Resources.resx and access it via Properties.Resources.simple_monitor_icon.
 				ComponentResourceManager resources = new ComponentResourceManager(typeof(MainForm));
@@ -70,7 +92,7 @@ namespace MonitorControl
 				options.onCreateContextMenu = Context_CreateContextMenu;
 				options.onDoubleClick = Context_DoubleClick;
 				options.ListenForDisplayStateChanges = true;
-				options.DisplayStateChanged += DisplayStateChanged;
+				options.DisplayStateChanged += MonitorControlServer.DisplayStateChanged;
 				context = new TrayIconApplicationContext(options);
 
 				Application.Run(context);
@@ -93,11 +115,6 @@ namespace MonitorControl
 				}
 				catch { }
 			}
-		}
-
-		private static void DisplayStateChanged(object sender, DisplayState state)
-		{
-			Logger.Info("Display state changed (notified by OS): " + state.ToString());
 		}
 
 		public static void Exit()

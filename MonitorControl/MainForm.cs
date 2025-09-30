@@ -50,6 +50,7 @@ namespace MonitorControl
 			txtCommandsOff.Text = Settings.FixStoredString(Program.settings.commandsOff);
 			txtCommandsOffAfterDelay.Text = Settings.FixStoredString(Program.settings.commandsOffAfterDelay);
 			txtCommandsOn.Text = Settings.FixStoredString(Program.settings.commandsOn);
+			nudDisplayIdleTimeout.Value = Program.settings.displayIdleTimeoutSeconds.Clamp(0, uint.MaxValue);
 
 			SetCurrentHttpPorts();
 		}
@@ -352,6 +353,19 @@ namespace MonitorControl
 		{
 			HotkeyForm hkForm = new HotkeyForm();
 			hkForm.ShowDialog();
+		}
+
+		private void nudDisplayIdleTimeout_ValueChanged(object sender, EventArgs e)
+		{
+			if (Program.settings.displayIdleTimeoutSeconds != (int)nudDisplayIdleTimeout.Value)
+			{
+				Program.settings.displayIdleTimeoutSeconds = (int)nudDisplayIdleTimeout.Value;
+				Program.settings.Save();
+				if (Program.settings.displayIdleTimeoutSeconds >= 0)
+				{
+					WinSleep.SetMonitorTimeoutSeconds_AC((uint)Program.settings.displayIdleTimeoutSeconds.Clamp(0, uint.MaxValue));
+				}
+			}
 		}
 	}
 }
