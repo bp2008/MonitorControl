@@ -51,6 +51,7 @@ namespace MonitorControl
 			txtCommandsOffAfterDelay.Text = Settings.FixStoredString(Program.settings.commandsOffAfterDelay);
 			txtCommandsOn.Text = Settings.FixStoredString(Program.settings.commandsOn);
 			nudDisplayIdleTimeout.Value = Program.settings.displayIdleTimeoutSeconds.Clamp(0, uint.MaxValue);
+			cbTurnOffDisplayAfterSeconds.Checked = nudDisplayIdleTimeout.Enabled = Program.settings.setDisplayIdleTimeout;
 
 			SetCurrentHttpPorts();
 		}
@@ -361,11 +362,31 @@ namespace MonitorControl
 			{
 				Program.settings.displayIdleTimeoutSeconds = (int)nudDisplayIdleTimeout.Value;
 				Program.settings.Save();
-				if (Program.settings.displayIdleTimeoutSeconds >= 0)
+				if (Program.settings.setDisplayIdleTimeout)
 				{
-					WinSleep.SetMonitorTimeoutSeconds_AC((uint)Program.settings.displayIdleTimeoutSeconds.Clamp(0, uint.MaxValue));
+					if (Program.settings.displayIdleTimeoutSeconds >= 0)
+					{
+						WinSleep.SetMonitorTimeoutSeconds_AC((uint)Program.settings.displayIdleTimeoutSeconds.Clamp(0, uint.MaxValue));
+					}
 				}
 			}
+		}
+
+		private void cbTurnOffDisplayAfterSeconds_CheckedChanged(object sender, EventArgs e)
+		{
+			if (Program.settings.setDisplayIdleTimeout != cbTurnOffDisplayAfterSeconds.Checked)
+			{
+				Program.settings.setDisplayIdleTimeout = cbTurnOffDisplayAfterSeconds.Checked;
+				Program.settings.Save();
+				if (Program.settings.setDisplayIdleTimeout)
+				{
+					if (Program.settings.displayIdleTimeoutSeconds >= 0)
+					{
+						WinSleep.SetMonitorTimeoutSeconds_AC((uint)Program.settings.displayIdleTimeoutSeconds.Clamp(0, uint.MaxValue));
+					}
+				}
+			}
+			nudDisplayIdleTimeout.Enabled = Program.settings.setDisplayIdleTimeout;
 		}
 	}
 }

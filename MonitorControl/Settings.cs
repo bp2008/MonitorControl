@@ -49,6 +49,10 @@ namespace MonitorControl
 		/// </summary>
 		public long displayIdleTimeoutSeconds = -1;
 		/// <summary>
+		/// True to set the OS monitor idle timeout to <see cref="displayIdleTimeoutSeconds"/>.
+		/// </summary>
+		public bool setDisplayIdleTimeout = false;
+		/// <summary>
 		/// Commands to run when turning off monitors (one command per line).
 		/// </summary>
 		public string commandsOff = "";

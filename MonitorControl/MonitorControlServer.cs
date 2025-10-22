@@ -252,6 +252,11 @@ namespace MonitorControl
 						return;
 					}
 					uint seconds = (uint)v.Clamp(0, uint.MaxValue);
+					if(p.Request.GetBoolParam("save"))
+					{
+						Program.settings.displayIdleTimeoutSeconds = seconds;
+						Program.settings.Save();
+					}
 					try
 					{
 						WinSleep.SetMonitorTimeoutSeconds_AC(seconds);
@@ -347,6 +352,7 @@ namespace MonitorControl
 						+ BuildRow("SetDisplayIdleTimeout?seconds=300", "Sets the display idle timeout in the current OS power profile, to 300 seconds (5 minutes).")
 						+ BuildRow("SetDisplayIdleTimeout?seconds=600", "Sets the display idle timeout in the current OS power profile, to 600 seconds (10 minutes).")
 						+ BuildRow("SetDisplayIdleTimeout?seconds=900", "Sets the display idle timeout in the current OS power profile, to 900 seconds (15 minutes).")
+						+ "<tr><td>Note<td>Add URL parameter &save=1 to SetDisplayIdleTimeout calls to save the new value in this app's configuration.  Otherwise this app's configured display idle timeout will be reapplied to the current OS power profiel the next time this app starts.</td></tr>"
 						+ BuildRow("log?n=10", "Returns the last 10 lines from the log file.")
 						+ BuildRow("log?n=25", "Returns the last 25 lines from the log file.")
 						+ BuildRow("log?n=100", "Returns the last 100 lines from the log file.")
@@ -534,15 +540,12 @@ namespace MonitorControl
 				OffTracker.NotifyMonitorOff();
 				if (previousDisplayState == DisplayState.On || previousDisplayState == DisplayState.Dimmed)
 				{
-					// If I have trouble with monitors waking on their own again, I could try setting the monitor timeout to a small value here.
-					//WinSleep.SetMonitorTimeoutSeconds_AC(5);
 					CancelDelayedOffCommands();
 					delayedOffCommandsHandle = SetTimeout.OnBackground(RunDelayedOffComandsIfDisplaysAreOff, (int)OffTracker.DelayedOffCommandsDelayMs);
 				}
 			}
 			else if (state == DisplayState.On || state == DisplayState.Dimmed)
 			{
-				RestorePreferredMonitorIdleTimeout();
 				CancelDelayedOffCommands();
 				OffTracker.NotifyMonitorOn();
 				if (previousDisplayState == DisplayState.Off)
@@ -663,14 +666,17 @@ namespace MonitorControl
 		}
 
 		/// <summary>
-		/// Sets the monitor idle timeout (in Windows power settings, current profile) to the preferred value from this program's settings.
+		/// Sets the monitor idle timeout (in Windows power settings, current profile) to the preferred value from this program's settings.  Only if this app is configured to do so.
 		/// </summary>
 		public static void RestorePreferredMonitorIdleTimeout()
 		{
-			if (Program.settings.displayIdleTimeoutSeconds >= 0
-				&& Program.settings.displayIdleTimeoutSeconds != WinSleep.GetMonitorTimeoutSeconds_AC())
+			if (Program.settings.setDisplayIdleTimeout)
 			{
-				WinSleep.SetMonitorTimeoutSeconds_AC((uint)Program.settings.displayIdleTimeoutSeconds.Clamp(0, uint.MaxValue));
+				if (Program.settings.displayIdleTimeoutSeconds >= 0
+					&& Program.settings.displayIdleTimeoutSeconds != WinSleep.GetMonitorTimeoutSeconds_AC())
+				{
+					WinSleep.SetMonitorTimeoutSeconds_AC((uint)Program.settings.displayIdleTimeoutSeconds.Clamp(0, uint.MaxValue));
+				}
 			}
 		}
 
@@ -680,7 +686,7 @@ namespace MonitorControl
 		/// <param name="state">-1 for "on", 1 for "sleep", 2 for "off".  The only value that really works reliably is 2 for "off".</param>
 		private static void SetMonitorInState(int state)
 		{
-			Console.WriteLine("MonitorInState: " + state);
+			//Console.WriteLine("MonitorInState: " + state);
 			DefWindowProc(GetDesktopWindow(), 0x112, (IntPtr)0xF170, (IntPtr)state);
 		}
 

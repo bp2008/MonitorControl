@@ -66,7 +66,6 @@
 			this.label16 = new System.Windows.Forms.Label();
 			this.label17 = new System.Windows.Forms.Label();
 			this.nudProgressBarStart = new System.Windows.Forms.NumericUpDown();
-			this.label18 = new System.Windows.Forms.Label();
 			this.nudDisplayIdleTimeout = new System.Windows.Forms.NumericUpDown();
 			this.btnOpenDataFolder = new System.Windows.Forms.Button();
 			this.btnOpenWebInterface = new System.Windows.Forms.Button();
@@ -77,6 +76,7 @@
 			this.groupBox2 = new System.Windows.Forms.GroupBox();
 			this.groupBox3 = new System.Windows.Forms.GroupBox();
 			this.cbLogRequests = new System.Windows.Forms.CheckBox();
+			this.cbTurnOffDisplayAfterSeconds = new System.Windows.Forms.CheckBox();
 			((System.ComponentModel.ISupportInitialize)(this.nudHttpPort)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudHttpsPort)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.nudIdleMs)).BeginInit();
@@ -591,19 +591,9 @@
             0});
 			this.nudProgressBarStart.ValueChanged += new System.EventHandler(this.nudProgressBarStart_ValueChanged);
 			// 
-			// label18
-			// 
-			this.label18.AutoSize = true;
-			this.label18.Location = new System.Drawing.Point(16, 451);
-			this.label18.Name = "label18";
-			this.label18.Size = new System.Drawing.Size(193, 16);
-			this.label18.TabIndex = 102;
-			this.label18.Text = "Turn off display after (seconds):";
-			this.toolTip1.SetToolTip(this.label18, resources.GetString("label18.ToolTip"));
-			// 
 			// nudDisplayIdleTimeout
 			// 
-			this.nudDisplayIdleTimeout.Location = new System.Drawing.Point(223, 449);
+			this.nudDisplayIdleTimeout.Location = new System.Drawing.Point(252, 448);
 			this.nudDisplayIdleTimeout.Maximum = new decimal(new int[] {
             -1,
             0,
@@ -748,13 +738,25 @@
 			this.cbLogRequests.UseVisualStyleBackColor = true;
 			this.cbLogRequests.CheckedChanged += new System.EventHandler(this.cbLogRequests_CheckedChanged);
 			// 
+			// cbTurnOffDisplayAfterSeconds
+			// 
+			this.cbTurnOffDisplayAfterSeconds.AutoSize = true;
+			this.cbTurnOffDisplayAfterSeconds.Location = new System.Drawing.Point(20, 450);
+			this.cbTurnOffDisplayAfterSeconds.Name = "cbTurnOffDisplayAfterSeconds";
+			this.cbTurnOffDisplayAfterSeconds.Size = new System.Drawing.Size(215, 20);
+			this.cbTurnOffDisplayAfterSeconds.TabIndex = 104;
+			this.cbTurnOffDisplayAfterSeconds.Text = "Turn off display after (seconds):";
+			this.toolTip1.SetToolTip(this.cbTurnOffDisplayAfterSeconds, resources.GetString("cbTurnOffDisplayAfterSeconds.ToolTip"));
+			this.cbTurnOffDisplayAfterSeconds.UseVisualStyleBackColor = true;
+			this.cbTurnOffDisplayAfterSeconds.CheckedChanged += new System.EventHandler(this.cbTurnOffDisplayAfterSeconds_CheckedChanged);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.ClientSize = new System.Drawing.Size(941, 739);
+			this.Controls.Add(this.cbTurnOffDisplayAfterSeconds);
 			this.Controls.Add(this.nudDisplayIdleTimeout);
-			this.Controls.Add(this.label18);
 			this.Controls.Add(this.groupBox3);
 			this.Controls.Add(this.btnManageHotkeys);
 			this.Controls.Add(this.label13);
@@ -846,8 +848,8 @@
 		private System.Windows.Forms.Label label15;
 		private System.Windows.Forms.NumericUpDown nudProgressBarLength;
 		private System.Windows.Forms.CheckBox cbLogRequests;
-		private System.Windows.Forms.Label label18;
 		private System.Windows.Forms.NumericUpDown nudDisplayIdleTimeout;
+		private System.Windows.Forms.CheckBox cbTurnOffDisplayAfterSeconds;
 	}
 }
 
